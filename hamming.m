@@ -1,31 +1,29 @@
 % Cada elemento del vector de entrada tiene solo dos posibles valores
-
+archivo = dlmread('entrada_hamming.txt');
+tam = size(archivo);
 % Tamaño de nuestros vectores prototipo
-R = 3;
+R = tam(2);
 
 % Numero de neuronas, corresponde a cada vector prototipo
-S = 4;
+S = tam(1) - 1;
 
 % Vectores prototipos
-p1 = [1 -1 -1]; % Naranja
-p2 = [1 1 -1]; % Manzana
-p3 = [-1 1 -1]; % Banana
-p4 = [-1 -1 1]; % Piña
+%p1 = [1 -1 -1]; % Naranja
+%p2 = [1 1 -1]; % Manzana
+%p3 = [-1 1 -1]; % Banana
+%p4 = [-1 -1 1]; % Piña
 % Vector a clasificar
 % Inicializar el vector prueba
-p = ones(R, 1);
-p(1) = 1;
-p(2) = -1;
-p(3) = 1;
+p = archivo(S+1, :)';
 
 % Las filas de W1 son los vectores prototipos
 % Inicializacion de W1
-W1 = ones(S, R);
+W1 = archivo(1:S, :);
 % Asignacion de los vectores prototipo
-W1(1, :) = p1;
-W1(2, :) = p2;
-W1(3, :) = p3;
-W1(4, :) = p4;
+%W1(1, :) = p1;
+%W1(2, :) = p2;
+%W1(3, :) = p3;
+%W1(4, :) = p4;
 % Cada elemento del bias es el tamaño del vector prototipo
 % Inicializacion del bias
 b1 = ones(S, 1);
@@ -54,11 +52,10 @@ for i = 1:S
     end;
 end;
 
-% La capa recurrente hara maximo 10 iteraciones
-MAX_ITERACION = 20;
 
 % Aqui se guardara la salida de la capa recurrente
 % +1 debido al elemento a(0)
+MAX_ITERACION = 100;
 a2_recurrente = ones(S,MAX_ITERACION+1);
 % Metomos la salida de la capa anterior
 a2_recurrente(:, 1) = a2;
@@ -78,11 +75,18 @@ for t = 1:MAX_ITERACION
 end;
 
 % Fin de la capa recurrente
-
+fprintf('Termino en la iteración %d\n', t);
+v = 0;
+for ite = a2
+    if ite ~= 0
+        break;
+    else
+        v = v+1;
+    end;
+end
+fprintf('La clase a la que converjio fue: %d\n', v);
 % Imprimir datos y graficar la salida de a2
-disp(t);
 a2_recurrente = a2_recurrente(:, 1:t+1);
-disp(a2_recurrente);
 figure('Name', 'Evolución de la salida de la capa recurrente');
 plot(0:t, a2_recurrente, 'LineWidth', 2);
 hold;
@@ -94,3 +98,4 @@ for i = 1:S
     etiquetas{i} = ['P_' num2str(i)];
 end;
 legend(etiquetas);
+

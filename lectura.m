@@ -1,0 +1,1 @@
+archivo = dlmread('entrada_hamming.txt');
