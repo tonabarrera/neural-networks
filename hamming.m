@@ -54,14 +54,12 @@ end;
 
 
 % Aqui se guardara la salida de la capa recurrente
-% +1 debido al elemento a(0)
-MAX_ITERACION = 100;
-a2_recurrente = ones(S,MAX_ITERACION+1);
 % Metomos la salida de la capa anterior
 a2_recurrente(:, 1) = a2;
 
 % Recurrencia de la capa
-for t = 1:MAX_ITERACION
+t = 1;
+while true
     % Obtenemos el t+1
     a2_sig = poslin(W2*a2);
     a2_recurrente(:, t+1) = a2_sig;
@@ -72,6 +70,7 @@ for t = 1:MAX_ITERACION
         % Siguiente iteracion
         a2 = a2_sig;
     end;
+    t = t + 1;
 end;
 
 % Fin de la capa recurrente
