@@ -83,7 +83,7 @@ for ite = a2
         v = v+1;
     end;
 end
-fprintf('La clase a la que converjio fue: %d\n', v);
+fprintf('La clase a la que convergió fue: %d\n', v);
 % Imprimir datos y graficar la salida de a2
 a2_recurrente = a2_recurrente(:, 1:t+1);
 figure('Name', 'Evolución de la salida de la capa recurrente');
