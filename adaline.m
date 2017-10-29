@@ -1,78 +1,112 @@
-eit = 0.01;
-alpha = 0.3;
-itmax = 10; % Iteración máxima
-Eit = zeros(1, itmax);
-opcion = inputdlg('1.-Red con bias   2.-Red sin bias', 'Elige una opción');
-if str2double(opcion{1}) == 1
-    disp('Espera');
-else
-    tam = inputdlg('Dame el tamaño del codificador perro', 'Codificador');
-    tam = str2double(tam{1});
-    tabla_verdad = zeros(2^tam, tam+1);
-    N = 2^tam-1;
-    valorW = zeros(itmax+1, tam);
-    W = rand(1, tam);
-    valorW(1, :) = W;
-    for i = 0:N
-        a = dec2bin(i, tam) - '0';
-        tabla_verdad(i+1, 1:tam) = a;
-        tabla_verdad(i+1, tam+1) = i;
-    end;
-    
-    for iteracion = 1:itmax
-        for n = 1:N
-            p = tabla_verdad(n, 1:tam)';
-            disp(p');
-            a = purelin(W*p);
-            t = tabla_verdad(n, tam+1);
-            ed = t-a;
-            Eit(iteracion) = Eit(iteracion) + ed;
-            W = W + (2 * alpha * ed*p');
-        end
-        Eit(iteracion) = 1/N * Eit(iteracion);
-        valorW(iteracion+1, :) = W;
-        if Eit(iteracion) == 0
-            disp('Iguales');
-            break;
-        elseif Eit(iteracion) < eit
-            disp('Menor');
-            break;
-        else
-            disp('Aun no');
-        end
-    end
-    
-    % Figura de los valores de W
-figure;
-% Grafica un vector en x y otro vector en y
-plot(0:iteracion, valorW(1:iteracion+1, :), 'LineWidth', 2); 
-hold;
-plot(0:iteracion, valorW(1:iteracion+1, :), '*');
-grid;
-% Etiquetas de los ejes
-xlabel('Iteración');
-ylabel('W');
-% Titulo de nuestra grafica
-legend('W_{1}', 'W_{2}', 'W_{3}');
-title('Valores de W');
+%% Funcion principal
+function adaline()
+    opcion = inputdlg('1.-Red con bias   2.-Red sin bias', 'Elige una opción');
+    if str2double(opcion{1}) == 1
+        disp('Espera');
+    else
+        tam = inputdlg('Dame el tamaño del codificador perro', 'Codificador');
+        tam = str2double(tam{1});
+        tabla_verdad = zeros(2^tam, tam+1);
+        eit = 0.01;
+        alpha = 0.3;
+        N = 2^tam-1;
+        W = rand(1, tam);
+        auxiliar_w = fopen('auxiliar_w.txt', 'w');
+        auxiliar_Eit = fopen('auxiliar_Eit.txt', 'w');
+        fprintf(auxiliar_w, '%f ', W);
+        fprintf(auxiliar_w, '\n');
+        for i = 0:N
+            a = dec2bin(i, tam) - '0';
+            tabla_verdad(i+1, 1:tam) = a;
+            tabla_verdad(i+1, tam+1) = i;
+        end;
+        continuar = true;
+        iteracion = 1;
+        while continuar
+            Eit = 0;
+            for n = 1:N
+                p = tabla_verdad(n, 1:tam)';
+                a = purelin(W*p);
+                t = tabla_verdad(n, tam+1);
+                ed = t-a;
+                Eit = Eit + ed;
+                W = W + (2 * alpha * ed*p');
+            end
+            % Guardar W y Eit
+            Eit = 1/N * Eit;
+            fprintf(auxiliar_Eit, '%f ', Eit);
+            fprintf(auxiliar_Eit, '\n');
 
-% Otra figura para mostrar en otra ventana
-figure;
-x = 1:iteracion;
-Eit = Eit(1:iteracion);
-% Grafica un vector en x y otro vector en y
-plot(x, Eit, 'LineWidth', 2);
-hold;
-plot(x, Eit, '*', 'LineWidth', 2);
-grid;
-% Imprime las coordenadas de Eit
-strValues = strtrim(cellstr(num2str([x(:) Eit(:)],'(%d,%d)')));
-text(x,Eit,strValues,'VerticalAlignment', 'bottom');
-% Etiquetas de los ejes
-xlabel('Iteración');
-ylabel('E_{it}');
-% Titulo de nuestra grafica
-title('Valores de E_{it}');
-disp(Eit);
-disp(valorW);
+            fprintf(auxiliar_w, '%f ', W);
+            fprintf(auxiliar_w, '\n');
+            if Eit == 0
+                disp('Criterio de igualdad');
+                break;
+            elseif Eit < eit
+                disp('Criterio de menor');
+                break;
+            end
+            iteracion = iteracion + 1;
+        end
+        fclose(auxiliar_Eit);
+        fclose(auxiliar_w);
+        % Figura de los valores de W
+        valoresW = dlmread('auxiliar_w.txt');
+        graficar_pesos(tam, valoresW, iteracion);
+        % Final de la grafica de W
+
+        % Otra figura para mostrar en otra ventana
+        valoresEit = dlmread('auxiliar_Eit.txt');
+        graficar_error(iteracion, valoresEit)
+        % Final de la grafica de error
+        
+        disp('Valores finales de W');
+        disp(W);
+        valores_finales = fopen('resultado_hora_fecha.txt', 'w');
+        fprintf(valores_finales, '%f', W);
+        fprintf(valores_finales, '\n');
+        fclose(valores_finales);
+    end
+end % Final de la funcion principal
+
+%% graficar_pesos: function description
+function graficar_pesos(tam, valoresW, iteracion)
+    figure('Name', 'Evolución de los pesos');
+    % Grafica un vector en x y otro vector en y
+    plot(0:iteracion, valoresW, 'LineWidth', 2); 
+    hold;
+    plot(0:iteracion, valoresW, '*');
+    grid;
+    % Etiquetas de los ejes
+    xlabel('Iteración');
+    ylabel('W');
+
+    % Titulo de nuestra grafica
+    etiquetas = cell(1, tam);
+    for i = 1:tam
+        etiquetas{i} = ['W_' num2str(i)];
+    end;
+    legend(etiquetas);
+    title('Valores de W');
 end
+
+%% graficar_error: function description
+function graficar_error(iteracion, valoresEit)
+    figure('Name', 'Error Eit');
+    x = 1:iteracion;
+    % Grafica un vector en x y otro vector en y
+    plot(x, valoresEit, 'LineWidth', 2);
+    hold;
+    plot(x, valoresEit, '*', 'LineWidth', 2);
+    grid;
+    % Imprime las coordenadas de Eit
+    strValues = strtrim(cellstr(num2str([x(:) valoresEit(:)], '(%d,%d)')));
+    text(x, valoresEit, strValues, 'VerticalAlignment', 'bottom');
+    % Etiquetas de los ejes
+    xlabel('Iteración');
+    ylabel('E_{it}');
+    % Titulo de nuestra grafica
+    title('Valores de E_{it}');
+end
+
+
