@@ -31,14 +31,14 @@ function aprendizaje()
     auxiliar_w = fopen('auxiliar_w.txt', 'w');
     auxiliar_bias = fopen('auxiliar_bias.txt', 'w');
     auxiliar_error = fopen('auxiliar_error.txt', 'w');
-    fprintf(auxiliar_w, '%10f ', W);
+    fprintf(auxiliar_w, '%.10f ', W);
     fprintf(auxiliar_w, '\n');
     
-    fprintf(auxiliar_bias, '%10f ', b);
+    fprintf(auxiliar_bias, '%.10f ', b);
     fprintf(auxiliar_bias, '\n');
     for iteracion = 1:itmax
         error = 0;
-        for i = 1:R
+        for i = 1:dimen(2)
             p = prototipos(:, i);
             a = hardlim(W*p + b);
             e = targets(:, i) - a;
@@ -46,15 +46,15 @@ function aprendizaje()
             b = b + e;
             error = error + e;
         end
-        error = 1/R * error;
+        error = 1/dimen(2) * error;
        
-        fprintf(auxiliar_w, '%10f ', W);
+        fprintf(auxiliar_w, '%.10f ', W);
         fprintf(auxiliar_w, '\n');
         
-        fprintf(auxiliar_bias, '%10f ', b);
+        fprintf(auxiliar_bias, '%.10f ', b);
         fprintf(auxiliar_bias, '\n');
         
-        fprintf(auxiliar_error, '%10f ', error);
+        fprintf(auxiliar_error, '%.10f ', error);
         fprintf(auxiliar_error, '\n');
         
         aux = 0;
@@ -104,11 +104,11 @@ function aprendizaje()
     archivo_final = strcat(archivo_final, '.txt');
     finales = fopen(archivo_final, 'w');
     fprintf(finales, 'Valores finales de W: \n');
-    fprintf(finales, '%10f ', W);
+    fprintf(finales, '%.10f ', W);
     fprintf(finales, '\n');
     
     fprintf(finales, 'Valores finales del bias: \n');
-    fprintf(finales, '%10f ', b);
+    fprintf(finales, '%.10f ', b);
     fprintf(finales, '\n');
     fclose(finales);
 end

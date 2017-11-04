@@ -3,11 +3,13 @@ function adaline()
     opcion = input('1.-Red con bias   2.-Red sin bias: ', 's');
     if str2double(opcion) == 1
         disp('Espera');
+        adaline_bias();
     else
         tam = input('Dame el tamaño del codificador: ', 's');
         tam = str2double(tam);
         tabla_verdad = zeros(2^tam, tam+1);
-        eit = 0.01;
+        eit = input('Dame el eit: ', 's');
+        eit = str2double(eit);
         alpha = input('Dame el valor de alpha: ', 's'); % 0.3
         alpha = str2double(alpha);
         N = 2^tam-1;
@@ -108,6 +110,75 @@ function graficar_error(iteracion, valoresEit)
     ylabel('E_{it}');
     % Titulo de nuestra grafica
     title('Valores de E_{it}');
+end
+
+%Con bias
+function adaline_bias()
+    % pedir valores al usuario (itmax & Eit)
+    p1 = [1 1]';
+    p5 = [1 2]';
+    p2 = [2 -1]';
+    p3 = [-1 2]';
+    p4 = [-1 -1]';
+    prototipos = [p1 p5 p2, p3 p4];
+    dimen = size(prototipos);
+    t1 = [-1 -1]';
+    t2 = [-1 1]';
+    t3 = [1 -1]';
+    t4 = [1 1]';
+    targets = [t1 t1 t2 t3 t4];
+    S = 2; % Maximo 2 debido a que puede clasificar 4 clases
+    R = dimen(1); % Elementos de los vectores
+    itmax = input('Ingrese valor de itmax: ', 's'); %5
+    itmax = str2double(itmax);
+    alpha = input('Dame el valor de alpha: ', 's'); % 0.3
+    alpha = str2double(alpha);
+    eit = input('Dame el eit: ', 's');
+    eit = str2double(eit);
+    W = zeros(S, R);
+    b = ones(S, 1);
+    
+    auxiliar_w = fopen('auxiliar_w.txt', 'w');
+    auxiliar_bias = fopen('auxiliar_bias.txt', 'w');
+    auxiliar_error = fopen('auxiliar_Eit.txt', 'w');
+    fprintf(auxiliar_w, '%.10f ', W);
+    fprintf(auxiliar_w, '\n');
+    
+    fprintf(auxiliar_bias, '%.10f ', b);
+    fprintf(auxiliar_bias, '\n');
+    
+    for iteracion = 1:itmax
+        Eit = 0;
+        for n = 1:dimen(2)
+            p = prototipos(:, n);
+            a = purelin(W*p + b);
+            t = targets(:, n);
+            ed = t-a;
+            Eit = Eit + ed;
+            W = W + (2 * alpha * ed * p');
+            b = b + (2 * alpha * ed);
+        end
+        Eit = 1/dimen(2) * Eit;
+        fprintf(auxiliar_error, '%.10f ', Eit);
+        fprintf(auxiliar_error, '\n');
+
+        fprintf(auxiliar_w, '%.10f ', W);
+        fprintf(auxiliar_w, '\n');
+        
+        fprintf(auxiliar_bias, '%.10f ', b);
+        fprintf(auxiliar_bias, '\n');
+        if Eit == 0
+            disp('Criterio de igualdad a cero');
+            break;
+        elseif Eit < eit
+            disp('Criterio de menor que el error');
+            break;
+        end
+    end
+    fclose(auxiliar_error);
+    fclose(auxiliar_w);
+    fclose(auxiliar_bias);
+    
 end
 
 
