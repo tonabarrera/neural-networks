@@ -1,5 +1,6 @@
 % Cada elemento del vector de entrada tiene solo dos posibles valores
-archivo = dlmread('entrada_hamming.txt');
+opcion = input('Ingresa el nombre del archivo: ', 's');
+archivo = dlmread(opcion);
 tam = size(archivo);
 % Tamaño de nuestros vectores prototipo
 R = tam(2);
@@ -16,10 +17,7 @@ W1 = archivo(1:S, :);
 
 % Cada elemento del bias es el tamaño del vector prototipo
 % Inicializacion del bias
-b1 = ones(S, 1);
-% Asignacion de valores
-b1(1, :) = R;
-b1(2, :) = R;
+b1 = ones(S, 1) * R;
 
 % Propagamos hacia adelante
 a1 = purelin((W1*p)+b1);
@@ -44,14 +42,14 @@ end;
 % Aqui se guardara la salida de la capa recurrente
 % Metomos la salida de la capa anterior
 salida = fopen('salida_hamming.txt', 'w');
-fprintf(salida, '%.10f ', a2);
+fprintf(salida, '%.15f ', a2);
 fprintf(salida, '\n');
 % Recurrencia de la capa
 t = 1;
 while true
     % Obtenemos el t+1
     a2_sig = poslin(W2*a2);
-    fprintf(salida, '%.10f ', a2_sig);
+    fprintf(salida, '%.15f ', a2_sig);
     fprintf(salida, '\n');
     if a2_sig == a2
         % Si ya terminamos detenemos el ciclo

@@ -1,14 +1,15 @@
 %% Funcion principal
 function adaline()
-    opcion = inputdlg('1.-Red con bias   2.-Red sin bias', 'Elige una opción');
-    if str2double(opcion{1}) == 1
+    opcion = input('1.-Red con bias   2.-Red sin bias: ', 's');
+    if str2double(opcion) == 1
         disp('Espera');
     else
-        tam = inputdlg('Dame el tamaño del codificador perro', 'Codificador');
-        tam = str2double(tam{1});
+        tam = input('Dame el tamaño del codificador: ', 's');
+        tam = str2double(tam);
         tabla_verdad = zeros(2^tam, tam+1);
         eit = 0.01;
-        alpha = 0.3;
+        alpha = input('Dame el valor de alpha: ', 's'); % 0.3
+        alpha = str2double(alpha);
         N = 2^tam-1;
         W = rand(1, tam);
         auxiliar_w = fopen('auxiliar_w.txt', 'w');
@@ -40,10 +41,10 @@ function adaline()
             fprintf(auxiliar_w, '%f ', W);
             fprintf(auxiliar_w, '\n');
             if Eit == 0
-                disp('Criterio de igualdad');
+                disp('Criterio de igualdad a cero');
                 break;
             elseif Eit < eit
-                disp('Criterio de menor');
+                disp('Criterio de menor que el error');
                 break;
             end
             iteracion = iteracion + 1;
@@ -63,7 +64,7 @@ function adaline()
         disp('Valores finales de W');
         disp(W);
         valores_finales = fopen('resultado_hora_fecha.txt', 'w');
-        fprintf(valores_finales, '%f', W);
+        fprintf(valores_finales, '%f ', W);
         fprintf(valores_finales, '\n');
         fclose(valores_finales);
     end
