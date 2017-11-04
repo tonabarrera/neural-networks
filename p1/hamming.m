@@ -41,7 +41,7 @@ end;
 
 % Aqui se guardara la salida de la capa recurrente
 % Metomos la salida de la capa anterior
-salida = fopen('salida_hamming.txt', 'w');
+salida = fopen('auxiliar_hamming.txt', 'w');
 fprintf(salida, '%.15f ', a2);
 fprintf(salida, '\n');
 % Recurrencia de la capa

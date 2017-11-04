@@ -2,9 +2,9 @@
 function adaline()
     opcion = input('1.-Red con bias   2.-Red sin bias: ', 's');
     if str2double(opcion) == 1
-        disp('Espera');
         adaline_bias();
     else
+        % Captura de los datos
         tam = input('Dame el tamaño del codificador: ', 's');
         tam = str2double(tam);
         tabla_verdad = zeros(2^tam, tam+1);
@@ -16,8 +16,9 @@ function adaline()
         W = rand(1, tam);
         auxiliar_w = fopen('auxiliar_w.txt', 'w');
         auxiliar_Eit = fopen('auxiliar_Eit.txt', 'w');
-        fprintf(auxiliar_w, '%f ', W);
+        fprintf(auxiliar_w, '%.10f ', W);
         fprintf(auxiliar_w, '\n');
+        % Llenamos nuestra tabla de verdad
         for i = 0:N
             a = dec2bin(i, tam) - '0';
             tabla_verdad(i+1, 1:tam) = a;
@@ -35,12 +36,11 @@ function adaline()
                 Eit = Eit + ed;
                 W = W + (2 * alpha * ed*p');
             end
-            % Guardar W y Eit
             Eit = 1/N * Eit;
-            fprintf(auxiliar_Eit, '%f ', Eit);
+            fprintf(auxiliar_Eit, '%.10f ', Eit);
             fprintf(auxiliar_Eit, '\n');
 
-            fprintf(auxiliar_w, '%f ', W);
+            fprintf(auxiliar_w, '%.10f ', W);
             fprintf(auxiliar_w, '\n');
             if Eit == 0
                 disp('Criterio de igualdad a cero');
@@ -53,6 +53,11 @@ function adaline()
         end
         fclose(auxiliar_Eit);
         fclose(auxiliar_w);
+        
+        % Desplegar los valores finales
+        disp('Valores finales de W');
+        disp(W);
+        
         % Figura de los valores de W
         valoresW = dlmread('auxiliar_w.txt');
         graficar_pesos(tam, valoresW, iteracion);
@@ -63,10 +68,12 @@ function adaline()
         graficar_error(iteracion, valoresEit)
         % Final de la grafica de error
         
-        disp('Valores finales de W');
-        disp(W);
-        valores_finales = fopen('resultado_hora_fecha.txt', 'w');
-        fprintf(valores_finales, '%f ', W);
+        % Guardamos en un archivo
+        a_final = strcat('resultado_', datestr(now, 'HH-MM_dd-mm-yyyy'));
+        a_final = strcat(a_final, '.txt');
+        valores_finales = fopen(a_final, 'w');
+        fprintf(valores_finales, 'Valores finales de W \n');
+        fprintf(valores_finales, '%.10f ', W);
         fprintf(valores_finales, '\n');
         fclose(valores_finales);
     end
@@ -146,7 +153,7 @@ function adaline_bias()
     
     fprintf(auxiliar_bias, '%.10f ', b);
     fprintf(auxiliar_bias, '\n');
-    
+    criterio = 0;
     for iteracion = 1:itmax
         Eit = 0;
         for n = 1:dimen(2)
@@ -168,16 +175,21 @@ function adaline_bias()
         fprintf(auxiliar_bias, '%.10f ', b);
         fprintf(auxiliar_bias, '\n');
         if Eit == 0
-            disp('Criterio de igualdad a cero');
+            criterio = 1;
             break;
         elseif Eit < eit
-            disp('Criterio de menor que el error');
+            criterio = 2;
             break;
         end
     end
     fclose(auxiliar_error);
     fclose(auxiliar_w);
     fclose(auxiliar_bias);
+    
+    if criterio == 0
+        disp('Termino alcanzando el maximo de iteraciones')
+    elseif criterio == 1
+        disp('Termino ');
     
 end
 
