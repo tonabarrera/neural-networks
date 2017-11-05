@@ -128,13 +128,42 @@
             \item Esto se realiza para cada elemento del conjunto de entrenamiento para poder completar una iteración.
             \item Este procedimiento se realiza hasta que cada salida de la red con cada vector de entrada sea igual a su correspondiente objetivo $a_Q = t_Q$ o en el caso de que se alcance un máximo de iteraciones.
         \end{enumerate}
+        \newpage
         \subsection{ADALINE}
-        ADALINE\cite{pagina}
+        La red ADALINE (ADAptive LInear NEuron) es muy similar a al perceptron con la diferencia que la función de transferencia es lineal en lugar de ser escalón y al igual que el perceptron solo pueden resolver problemas linealmente separables como por ejemplo el problema de la compuerta AND de la figura \ref{fig:AND}. \cite{pagina}
+        \begin{figure}[H]
+            \begin{center}
+                \includegraphics[width=5cm]{img/adaline/AND.png}
+                \caption{La compuerta AND es linealmente separable. \cite{libro1}}
+                \label{fig:AND}
+            \end{center}
+        \end{figure}
+        Por otro lado un problema linealmente no separable seria el de la figura \ref{fig:XOR} ya que no es posible trazar lineas que funjan como frontera de decision entre las dos clases que tenemos.
+        
+        Otro aspecto importante de ADALINE es que el algoritmo LMS es mas poderoso que la regla de aprendizaje del perceptron. Esto debido a que la regla de aprendizaje del perceptron garantiza la convergencia a una solución que clasifica los vectores prototipo. Por lo que es sensible al ruido que se produce debido a que estos vectores suelen estar muy cerca de las fronteras de decisión.
+        \begin{figure}[H]
+            \begin{center}
+                \includegraphics[width=5cm]{img/adaline/XOR.png}
+                \caption{La compuerta XOR no se puede separar linealmente. \cite{libro1}}
+                \label{fig:XOR}
+            \end{center}
+        \end{figure}
+        Este problema es solucionado con LMS, el cual desplaza las fronteras de decisión lejos de los patrones de entrenamiento esto vuelve a este método más útil y aplicable a otros campos como el procesamiento de señales digital de señales en donde se utiliza para cancelar echo en las lineas telefónicas de larga distancia.
+        
+        La arquitectura de esta red es la siguiente.
+        
+        \begin{figure}[H]
+            \begin{center}
+                \includegraphics[width=10cm]{img/adaline/arquitectura.png}
+                \caption{Arquitectura de la red ADALINE. \cite{libro1}}
+                \label{fig:adaline-diagrama}
+            \end{center}
+        \end{figure}
     \section{Resultados experimentales}
         \subsection{Hamming}
             \begin{figure}[H]
                 \begin{center}
-                    \includegraphics[width=16cm]{img/hamming/hamming1.png}
+                    \includegraphics[width=4cm]{img/hamming/hamming1.png}
                     \caption{Prueba 1 de la red Hamming.}
                     \label{fig:hamming1}
                 \end{center}

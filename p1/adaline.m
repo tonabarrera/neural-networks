@@ -4,7 +4,7 @@ function adaline()
     if str2double(opcion) == 1
         adaline_bias();
     else
-        % Captura de los datos
+        % ADALINE SIN BIAS
         tam = input('Dame el tamaño del codificador: ', 's');
         tam = str2double(tam);
         tabla_verdad = zeros(2^tam, tam+1);
@@ -131,6 +131,7 @@ function adaline_bias()
     tipo_lectura = 0;
     while feof(prueba) == 0
         linea = fgetl(prueba);
+        % Si no tiene llave es que es de dos clases y usamos una neurona
         if linea ~= '{'
             fclose(prueba);
             datos = dlmread(archivo);
@@ -141,7 +142,7 @@ function adaline_bias()
             targets = datos(:, tam(2))';
             R = dimen(1);
             tipo_lectura = 1;
-            break;
+            break; % No tiene caso leer mas lineas
         else
             linea = linea(2:length(linea)-1);
             proto = linea(2:find(linea==',')-2);
@@ -152,6 +153,7 @@ function adaline_bias()
             targets = [targets tar'];
         end
     end
+    % Si tiene mas de dos clases
     if tipo_lectura == 0
         S = 2;
         dimen = size(prototipos);
