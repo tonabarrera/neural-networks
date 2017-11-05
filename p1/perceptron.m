@@ -47,6 +47,7 @@ function aprendizaje()
             error = error + e;
         end
         error = 1/dimen(2) * error;
+        error = abs(error);
        
         fprintf(auxiliar_w, '%.10f ', W);
         fprintf(auxiliar_w, '\n');
@@ -57,11 +58,7 @@ function aprendizaje()
         fprintf(auxiliar_error, '%.10f ', error);
         fprintf(auxiliar_error, '\n');
         
-        aux = 0;
-        for e = error
-            aux = aux + e;
-        end
-        if aux == 0
+        if error == 0
             break;
         end
     end
@@ -71,15 +68,15 @@ function aprendizaje()
     fclose(auxiliar_bias);
     
     % Figura de los valores de W
-        valoresW = dlmread('auxiliar_w.txt');
-        valores_bias = dlmread('auxiliar_bias.txt');
-        graficar_pesos(valoresW, iteracion, S, R);
-        graficar_bias(valores_bias, iteracion, S);
+    valoresW = dlmread('auxiliar_w.txt');
+    valores_bias = dlmread('auxiliar_bias.txt');
+    graficar_pesos(valoresW, iteracion, S, R);
+    graficar_bias(valores_bias, iteracion, S);
     % Final de la grafica de W
     
     % Otra figura para mostrar en otra ventana
-        valoresEit = dlmread('auxiliar_error.txt');
-        graficar_error(iteracion, valoresEit, S);
+    valoresEit = dlmread('auxiliar_error.txt');
+    graficar_error(iteracion, valoresEit, S);
     % Final de la grafica de error
     
     % Criterio de terminacion
@@ -88,18 +85,19 @@ function aprendizaje()
     else
         fprintf('Termino  en la iteracion %d porque logro converger, ', iteracion);
         disp('la salida es igual al target');
+        
+        % Desplegar valores finales de pesos y bias
+        % Almacenar pesos y bias en archivo resultado_hora_fecha.txt
+        fprintf('Valores finales de W: \n');
+        fprintf('%10f ', W);
+        fprintf('\n');
+
+        fprintf('Valores finales del bias: \n');
+        fprintf('%10f ', b);
+        fprintf('\n');
     end;
     % Final del criterio de terminacion
     
-    % Desplegar valores finales de pesos y bias
-    % Almacenar pesos y bias en archivo resultado_hora_fecha.txt
-    fprintf('Valores finales de W: \n');
-    fprintf('%10f ', W);
-    fprintf('\n');
-    
-    fprintf('Valores finales del bias: \n');
-    fprintf('%10f ', b);
-    fprintf('\n');
     archivo_final = strcat('resultado_', datestr(now, 'HH-MM_dd-mm-yyyy'));
     archivo_final = strcat(archivo_final, '.txt');
     finales = fopen(archivo_final, 'w');

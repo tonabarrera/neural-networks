@@ -37,6 +37,7 @@ function adaline()
                 W = W + (2 * alpha * ed*p');
             end
             Eit = 1/N * Eit;
+            Eit = abs(Eit);
             fprintf(auxiliar_Eit, '%.10f ', Eit);
             fprintf(auxiliar_Eit, '\n');
 
@@ -120,29 +121,50 @@ end
 
 %Con bias
 function adaline_bias()
-    % pedir valores al usuario (itmax & Eit)
-    p1 = [1 1]';
-    p5 = [1 2]';
-    p2 = [2 -1]';
-    p3 = [-1 2]';
-    p4 = [-1 -1]';
-    prototipos = [p1 p5 p2, p3 p4];
-    dimen = size(prototipos);
-    t1 = [-1 -1]';
-    t2 = [-1 1]';
-    t3 = [1 -1]';
-    t4 = [1 1]';
-    targets = [t1 t1 t2 t3 t4];
-    S = 2; % Maximo 2 debido a que puede clasificar 4 clases
-    R = dimen(1); % Elementos de los vectores
+    archivo = input('Dame el nombre del archivo: ', 's');
+    prueba = fopen(archivo, 'r');
+    S = 0;
+    targets = [];
+    prototipos = [];
+    R = 0;
+    dimen = [];
+    tipo_lectura = 0;
+    while feof(prueba) == 0
+        linea = fgetl(prueba);
+        if linea ~= '{'
+            fclose(prueba);
+            datos = dlmread(archivo);
+            tam = size(datos);
+            S = 1;
+            prototipos = datos(:, 1:tam(2)-1)';
+            dimen = size(prototipos);
+            targets = datos(:, tam(2))';
+            R = dimen(1);
+            tipo_lectura = 1;
+            break;
+        else
+            linea = linea(2:length(linea)-1);
+            proto = linea(2:find(linea==',')-2);
+            tar = linea(find(linea==',')+2:length(linea)-1);
+            proto = str2num(proto);
+            tar = str2num(tar);
+            prototipos = [prototipos proto'];
+            targets = [targets tar'];
+        end
+    end
+    if tipo_lectura == 0
+        S = 2;
+        dimen = size(prototipos);
+        R = dimen(1);
+    end   
     itmax = input('Ingrese valor de itmax: ', 's'); %5
     itmax = str2double(itmax);
     alpha = input('Dame el valor de alpha: ', 's'); % 0.3
     alpha = str2double(alpha);
     eit = input('Dame el eit: ', 's');
     eit = str2double(eit);
-    W = zeros(S, R);
-    b = ones(S, 1);
+    W = rand(S, R);
+    b = rand(S, 1);
     
     auxiliar_w = fopen('auxiliar_w.txt', 'w');
     auxiliar_bias = fopen('auxiliar_bias.txt', 'w');
@@ -165,6 +187,7 @@ function adaline_bias()
             b = b + (2 * alpha * ed);
         end
         Eit = 1/dimen(2) * Eit;
+        Eit = abs(Eit);
         fprintf(auxiliar_error, '%.10f ', Eit);
         fprintf(auxiliar_error, '\n');
 
@@ -185,22 +208,109 @@ function adaline_bias()
     fclose(auxiliar_w);
     fclose(auxiliar_bias);
     
+    % Figura de los valores de W
+    valoresW = dlmread('auxiliar_w.txt');
+    valores_bias = dlmread('auxiliar_bias.txt');
+    graficar_pesos_bias(valoresW, iteracion, S, R);
+    graficar_bias(valores_bias, iteracion, S);
+    % Final de la grafica de W
+    
+    % Otra figura para mostrar en otra ventana
+    valoresEit = dlmread('auxiliar_Eit.txt');
+    graficar_error_bias(iteracion, valoresEit, S);
+    % Final de la grafica de error
+    
     if criterio == 0
         disp('Termino alcanzando el maximo de iteraciones')
     elseif criterio == 1
         disp('Termino por criterio de error igual a 0');
+        fprintf('Termino en la iteracion %d\n', iteracion);
         disp('Valores finales de W:');
         disp(W);
         disp('Valores finales del bias:');
         disp(b);
     else
         disp('Termino por criterio de menor al error permitido');
-        disp('Termino por criterio de error igual a 0');
+        fprintf('Termino en la iteracion %d\n', iteracion);
         disp('Valores finales de W:');
         disp(W);
         disp('Valores finales del bias:');
         disp(b);
     end
+    
+    archivo_final = strcat('resultado_', datestr(now, 'HH-MM_dd-mm-yyyy'));
+    archivo_final = strcat(archivo_final, '.txt');
+    finales = fopen(archivo_final, 'w');
+    fprintf(finales, 'Valores finales de W: \n');
+    fprintf(finales, '%.10f ', W);
+    fprintf(finales, '\n');
+    
+    fprintf(finales, 'Valores finales del bias: \n');
+    fprintf(finales, '%.10f ', b);
+    fprintf(finales, '\n');
+    fclose(finales);
 end
 
 
+%% graficar_pesos: function description
+function graficar_pesos_bias(valoresW, iteracion, S, R)
+    figure('Name', 'Evolución de los pesos');
+    % Grafica un vector en x y otro vector en y
+    plot(0:iteracion, valoresW, 'LineWidth', 2); 
+    hold;
+    grid;
+    % Etiquetas de los ejes
+    xlabel('Iteración');
+    ylabel('W');
+    
+    etiquetas = cell(1, S*R);
+    k = 1;
+    for i = 1:S
+        for j = 1:R
+            etiquetas{k} = ['W_{' num2str(i) ',' num2str(j) '}'];
+            k = k+1;
+        end;
+    end;
+    legend(etiquetas);
+    title('Valores de W');
+end
+
+%% graficar_error: function description
+function graficar_error_bias(iteracion, valoresEit, S)
+    figure('Name', 'Error Eit');
+    x = 1:iteracion;
+    % Grafica un vector en x y otro vector en y
+    plot(x, valoresEit, 'LineWidth', 2);
+    hold;
+    grid;
+    % Etiquetas de los ejes
+    xlabel('Iteración');
+    ylabel('E_{it}');
+    % Titulo de nuestra grafica
+    etiquetas = cell(1, S);
+    for i = 1:S
+        etiquetas{i} = ['Neurona ' num2str(i)];
+    end;
+    legend(etiquetas);
+    % Titulo de nuestra grafica
+    title('Valores de E_{it}');
+end
+
+%% graficar_bias
+function graficar_bias(valores_bias, iteracion, S)
+    figure('Name', 'Evolución del bias');
+    % Grafica un vector en x y otro vector en y
+    plot(0:iteracion, valores_bias, 'LineWidth', 2); 
+    hold;
+    grid;
+    % Etiquetas de los ejes
+    xlabel('Iteración');
+    ylabel('Bias');
+    % Titulo de nuestra grafica
+    etiquetas = cell(1, S);
+    for i = 1:S
+        etiquetas{i} = ['b_' num2str(i)];
+    end;
+    legend(etiquetas);
+    title('Valores del bias');
+end
