@@ -1,0 +1,4 @@
+Valores finales de W: 
+0.6295964738 0.5513964012 
+Valores finales del bias: 
+-0.9170999133 
