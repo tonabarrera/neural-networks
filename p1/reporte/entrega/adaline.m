@@ -1,107 +1,11 @@
-    \section{Anexo}
-        En esta secci√≥n se encuentra el c√≥digo de los tres programas desarrollados en MATLAB.
-        \subsection{Hamming}
-        \begin{lstlisting}
-% Cada elemento del vector de entrada tiene solo dos posibles valores
-opcion = input('Ingresa el nombre del archivo: ', 's');
-archivo = dlmread(opcion);
-tam = size(archivo);
-% Tam de nuestros vectores prototipo
-R = tam(2);
-
-% Numero de neuronas, corresponde a cada vector prototipo
-S = tam(1) - 1;
-
-% Vector a clasificar
-p = archivo(S+1, :)';
-
-% Las filas de W1 son los vectores prototipos
-% Inicializacion de W1
-W1 = archivo(1:S, :);
-
-% Cada elemento del bias es el tam del vector prototipo
-% Inicializacion del bias
-b1 = ones(S, 1) * R;
-
-% Propagamos hacia adelante
-a1 = purelin((W1*p)+b1);
-% Fin de la capa feedforward
-
-%Inicio de la capa recurrente
-a2 = a1;
-% Obtencion del valor epsilon 0 < epsilon < 1/(S-1)
-epsilon = round(rand(1)*1/(S-1), 4); 
-% Inicializacion y llenado de la W2 de la capa recurrente
-W2 = ones(S, S);
-for i = 1:S
-    for j = 1:S
-        if i==j
-            W2(i, j) = 1;
-        else
-            W2(i, j) = -epsilon; 
-        end;
-    end;
-end;
-
-% Aqui se guardara la salida de la capa recurrente
-% Metomos la salida de la capa anterior
-salida = fopen('salida_hamming.txt', 'w');
-fprintf(salida, '%.15f ', a2);
-fprintf(salida, '\n');
-% Recurrencia de la capa
-t = 1;
-while true
-    % Obtenemos el t+1
-    a2_sig = poslin(W2*a2);
-    fprintf(salida, '%.15f ', a2_sig);
-    fprintf(salida, '\n');
-    if a2_sig == a2
-        % Si ya terminamos detenemos el ciclo
-        fclose(salida);
-        break;
-    else
-        % Siguiente iteracion
-        a2 = a2_sig;
-    end;
-    t = t + 1;
-end;
-
-% Fin de la capa recurrente
-fprintf('Termino en la iteracion %d\n', t);
-v = 1;
-for ite = a2'
-    if ite ~= 0
-        break;
-    else
-        v = v+1;
-    end;
-end
-fprintf('La clase a la que convergio fue: %d\n', v);
-% Imprimir datos y graficar la salida de a2
-a2_recurrente = dlmread('salida_hamming.txt');
-figure('Name', 'Evolucion de la salida de la capa recurrente');
-plot(0:t, a2_recurrente, 'LineWidth', 2);
-hold;
-grid;
-xlabel('t');
-ylabel('a^2(t)');
-etiquetas = cell(1, S);
-for i = 1:S
-    etiquetas{i} = ['P_' num2str(i)];
-end;
-legend(etiquetas);
-        \end{lstlisting}
-        \subsection{Perceptron}
-        \subsection{ADALINE}
-        \begin{lstlisting}
 %% Funcion principal
 function adaline()
     opcion = input('1.-Red con bias   2.-Red sin bias: ', 's');
     if str2double(opcion) == 1
         adaline_bias();
     else
-        % Captura de los datos
-        tam = input('Dame el tam del codificador: ', 's');
+        % ADALINE SIN BIAS
+        tam = input('Dame el tamaÒo del codificador: ', 's');
         tam = str2double(tam);
         tabla_verdad = zeros(2^tam, tam+1);
         eit = input('Dame el eit: ', 's');
@@ -136,7 +40,7 @@ function adaline()
             Eit = abs(Eit);
             fprintf(auxiliar_Eit, '%.10f ', Eit);
             fprintf(auxiliar_Eit, '\n');
-        
+
             fprintf(auxiliar_w, '%.10f ', W);
             fprintf(auxiliar_w, '\n');
             if Eit == 0
@@ -150,7 +54,7 @@ function adaline()
         end
         fclose(auxiliar_Eit);
         fclose(auxiliar_w);
-    
+        
         % Desplegar los valores finales
         disp('Valores finales de W');
         disp(W);
@@ -159,7 +63,7 @@ function adaline()
         valoresW = dlmread('auxiliar_w.txt');
         graficar_pesos(tam, valoresW, iteracion);
         % Final de la grafica de W
-        
+
         % Otra figura para mostrar en otra ventana
         valoresEit = dlmread('auxiliar_Eit.txt');
         graficar_error(iteracion, valoresEit)
@@ -178,15 +82,15 @@ end % Final de la funcion principal
 
 %% graficar_pesos: function description
 function graficar_pesos(tam, valoresW, iteracion)
-    figure('Name', 'Evolucion de los pesos');
+    figure('Name', 'EvoluciÛn de los pesos');
     % Grafica un vector en x y otro vector en y
     plot(0:iteracion, valoresW, 'LineWidth', 2); 
     hold;
     grid;
     % Etiquetas de los ejes
-    xlabel('Iteracion');
+    xlabel('IteraciÛn');
     ylabel('W');
-    
+
     % Titulo de nuestra grafica
     etiquetas = cell(1, tam);
     for i = 1:tam
@@ -209,7 +113,7 @@ function graficar_error(iteracion, valoresEit)
     strValues = strtrim(cellstr(num2str([x(:) valoresEit(:)], '(%d,%d)')));
     text(x, valoresEit, strValues, 'VerticalAlignment', 'bottom');
     % Etiquetas de los ejes
-    xlabel('Iteracion');
+    xlabel('IteraciÛn');
     ylabel('E_{it}');
     % Titulo de nuestra grafica
     title('Valores de E_{it}');
@@ -227,6 +131,7 @@ function adaline_bias()
     tipo_lectura = 0;
     while feof(prueba) == 0
         linea = fgetl(prueba);
+        % Si no tiene llave es que es de dos clases y usamos una neurona
         if linea ~= '{'
             fclose(prueba);
             datos = dlmread(archivo);
@@ -237,7 +142,7 @@ function adaline_bias()
             targets = datos(:, tam(2))';
             R = dimen(1);
             tipo_lectura = 1;
-            break;
+            break; % No tiene caso leer mas lineas
         else
             linea = linea(2:length(linea)-1);
             proto = linea(2:find(linea==',')-2);
@@ -248,6 +153,7 @@ function adaline_bias()
             targets = [targets tar'];
         end
     end
+    % Si tiene mas de dos clases
     if tipo_lectura == 0
         S = 2;
         dimen = size(prototipos);
@@ -259,8 +165,8 @@ function adaline_bias()
     alpha = str2double(alpha);
     eit = input('Dame el eit: ', 's');
     eit = str2double(eit);
-    W = ones(S, R);
-    b = ones(S, 1);
+    W = rand(S, R);
+    b = rand(S, 1);
     
     auxiliar_w = fopen('auxiliar_w.txt', 'w');
     auxiliar_bias = fopen('auxiliar_bias.txt', 'w');
@@ -286,7 +192,7 @@ function adaline_bias()
         Eit = abs(Eit);
         fprintf(auxiliar_error, '%.10f ', Eit);
         fprintf(auxiliar_error, '\n');
-        
+
         fprintf(auxiliar_w, '%.10f ', W);
         fprintf(auxiliar_w, '\n');
         
@@ -350,13 +256,13 @@ end
 
 %% graficar_pesos: function description
 function graficar_pesos_bias(valoresW, iteracion, S, R)
-    figure('Name', 'Evolucion de los pesos');
+    figure('Name', 'EvoluciÛn de los pesos');
     % Grafica un vector en x y otro vector en y
     plot(0:iteracion, valoresW, 'LineWidth', 2); 
     hold;
     grid;
     % Etiquetas de los ejes
-    xlabel('Iteracion');
+    xlabel('IteraciÛn');
     ylabel('W');
     
     etiquetas = cell(1, S*R);
@@ -380,7 +286,7 @@ function graficar_error_bias(iteracion, valoresEit, S)
     hold;
     grid;
     % Etiquetas de los ejes
-    xlabel('Iteracion');
+    xlabel('IteraciÛn');
     ylabel('E_{it}');
     % Titulo de nuestra grafica
     etiquetas = cell(1, S);
@@ -394,13 +300,13 @@ end
 
 %% graficar_bias
 function graficar_bias(valores_bias, iteracion, S)
-    figure('Name', 'Evolucion del bias');
+    figure('Name', 'EvoluciÛn del bias');
     % Grafica un vector en x y otro vector en y
     plot(0:iteracion, valores_bias, 'LineWidth', 2); 
     hold;
     grid;
     % Etiquetas de los ejes
-    xlabel('Iteracion');
+    xlabel('IteraciÛn');
     ylabel('Bias');
     % Titulo de nuestra grafica
     etiquetas = cell(1, S);
@@ -410,4 +316,3 @@ function graficar_bias(valores_bias, iteracion, S)
     legend(etiquetas);
     title('Valores del bias');
 end
-        \end{lstlisting}
