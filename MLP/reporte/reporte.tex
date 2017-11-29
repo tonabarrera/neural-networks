@@ -1,0 +1,92 @@
+\documentclass[letterpaper, 12pt, titlepage]{article}
+\usepackage[margin=2.5cm]{geometry}
+% IDIOMA %
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+% IMAGENES
+\usepackage{graphicx} 
+\usepackage{float}
+% COLORES
+\usepackage{color}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{RGB}{253,151,31}
+\definecolor{deepred}{RGB}{249,38,114}
+% CODIGO %
+\usepackage{listings}
+
+\lstset{
+    frame=tb,
+    language=MATLAB,
+    aboveskip=3mm,
+    belowskip=3mm,
+    showstringspaces=false,
+    columns=flexible,
+    numbers=left,
+    stepnumber=1,
+    basicstyle={\small\ttfamily},
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=2,
+    morekeywords={self, append},
+    emph={},
+    emphstyle=\color{deepred}
+}
+%opening
+\title{Reporte Perceptrón Multicapa (MLP)}
+\author{Barrera Pérez Carlos Tonatihu \\Boleta: 2016630023\\ Profesor: Moreno 
+Armendariz Marco Antonio \\ Redes Neuronales \\ Grupo: 3CM2 }
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introducción}
+El objetivo del siguiente trabajo es sentar las bases de los principales puntos 
+en el estudio del Perceptrón Multicapa (Multilayer Perceptron) entre los que 
+están sus características, las partes que lo conforman y el como estas partes 
+trabajan juntas para lograr el funcionamiento que el MLP presenta. Conociendo 
+su funcionamiento se puede determinar cuales son las principales actividades en 
+las que es empleada esta arquitectura de redes neuronales lo cual, a su vez, 
+explica el porque dicha red es de tal importancia en el campo de las redes 
+neuronales.
+\\\\
+Sin embargo, todo este conocimiento teórico seria nada si no se ve aplicado a 
+algún problema en especifico, es debido a esto que en esta práctica se empleo 
+el perceptrón multicapa para realizar la aproximación de señales (la cual es 
+una de las principales aplicaciones que tiene esta red) esta aproximación fue 
+desarrollada utilizando la herramienta MATLAB, entre las principales 
+características que tiene el programa desarrollado están.
+\begin{itemize}
+ \item Entrada de datos por parte del usuario.
+ \item Distintos métodos para determinar la convergencia de la red.
+ \item Graficación de los resultados obtenidos por el perceptrón.
+\end{itemize}
+Aunado a esta implementación se encuentra la discusión de resultados en la cual 
+se realiza un análisis de los datos obtenidos de los resultados 
+experimentales con distintos casos de pruebas. Al hacer dicho analisis se llego 
+a diferentes conclusiones respecto a la implementación realizada y en generar a 
+la red neuronal utilizada como es el caso de sus ventajas y las limitaciones 
+que tiene el uso de esta.
+
+\newpage
+\section{Marco teórico}
+Nada \cite{libro1}
+\section{Resultados experimentales}
+\subsection{Experimento 1}
+\subsection{Experimento 2}
+\subsection{Experimento 3}
+\section{Discusión de resultados}
+\section{Conclusiones}
+\bibliographystyle{apalike}
+\bibliography{reporte}
+\section{Anexo}
+
+\end{document}
