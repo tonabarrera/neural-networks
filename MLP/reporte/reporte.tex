@@ -1,5 +1,11 @@
-\documentclass[letterpaper, 12pt, titlepage]{article}
-\usepackage[margin=2.5cm]{geometry}
+% !TeX spellcheck = es_ES
+\documentclass[12pt, titlepage]{article}
+\usepackage[letterpaper, margin=2.5cm]{geometry}
+% MATEMATICAS
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{physics}
 % IDIOMA %
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
@@ -71,7 +77,7 @@ características que tiene el programa desarrollado están.
 \end{itemize}
 Aunado a esta implementación se encuentra la discusión de resultados en la cual 
 se realiza un análisis de los datos obtenidos de los resultados 
-experimentales con distintos casos de pruebas. Al hacer dicho analisis se llego 
+experimentales con distintos casos de pruebas. Al hacer dicho análisis se llego 
 a diferentes conclusiones respecto a la implementación realizada y en generar a 
 la red neuronal utilizada como es el caso de sus ventajas y las limitaciones 
 que tiene el uso de esta.
@@ -79,6 +85,40 @@ que tiene el uso de esta.
 \newpage
 \section{Marco teórico}
 Nada \cite{libro1}
+\subsection{ECUACIONES QUE PODRÍA ESTAR OCUPANDO}
+\subsubsection{Forward propagation}
+\begin{align*}
+ \boldsymbol{a}^0 &= \boldsymbol{p} \\
+ \boldsymbol{a}^{m+1} = 
+\boldsymbol{f}^{m+1}(\boldsymbol{W}^{m+1}\boldsymbol{a}^{a}+\boldsymbol{b}^{m+1}
+) & & \text{Para $m=0, 1, \ldots M-1$} \\
+ \boldsymbol{a} &= \boldsymbol{a}^{M}
+\end{align*}
+\subsubsection{Backward propagation}
+\begin{align*}
+    \boldsymbol{s}^M &= 
+-2\boldsymbol{\dot{F}}^{M}(\boldsymbol{n}^{M})(\boldsymbol{t-a}) \\
+    \boldsymbol{s}^{m} &= 
+\boldsymbol{\dot{F}}^{m}(\boldsymbol{n}^{m})(\boldsymbol{W}^{m+1})^{T}
+\boldsymbol{s}^{m+1} & & \text{para $m=M-1, \ldots, 2, 1$} \\
+\text{donde} \\
+\boldsymbol{\dot{F}}^{m}(\boldsymbol{n}^{m}) &=
+\begin{bmatrix}
+  \dot{f}^{m}(n_{1}^{m}) & 0 & \ldots & 0 \\
+  0 & \dot{f}^{m}(n_{2}^{m}) & \ldots & 0 \\
+  \vdots & \vdots & \ddots & \vdots \\
+  0 & 0 & \ldots & \dot{f}^{m}(n_{s^{m}}^{m})
+\end{bmatrix} \\
+\dot{f}^{m}(n_{j}^{m}) &= 
+\frac{\partial \dot{f}^{m}(n_{j}^{m})}{\partial n_{j}^{m}}
+\end{align*}
+\subsubsection{Actualización de los pesos}
+\begin{align*}
+    \boldsymbol{W}^{m}(k+1) &= W^{m}(k)-\alpha 
+\boldsymbol{s}^{m}(\boldsymbol{a}^{m-1})^{T}, \\
+\boldsymbol{b}^{m}(k+1) &= \boldsymbol{b}^{m}(k) - \alpha \boldsymbol{s}^{m}
+\end{align*}
+
 \section{Resultados experimentales}
 \subsection{Experimento 1}
 \subsection{Experimento 2}
