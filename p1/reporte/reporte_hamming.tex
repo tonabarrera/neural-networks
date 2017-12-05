@@ -86,7 +86,12 @@
         \item Para la siguiente capa debido a que es una capa recurrente debemos de inicializar la capa recurrente con el valor de salida de la capa feedforward, es decir, $\boldsymbol{a^2(0) = a^1}$, esto con el fin de poder obtener los siguientes valores de la forma 
         \[  \boldsymbol{a^2(t+1) = poslin(W^2a^2(t))}\]
         \item Lo siguiente es llenar la matriz de pesos de la segunda capa en donde los elementos en la diagonal de la matriz tendrán valores de uno y el resto serán valores pequeños negativos.
-        \[ w^2_{i,j} = \begin{cases} 1 & i=j \\-\epsilon & \text{en otro caso} \end{cases} \]
+        \[ f(i, j) = 
+        \begin{cases} 
+        minimo(f(i, j-1), f(i+1, j)) & i < j \mathbin{\&}  P_{i} \ne  P_{j} \\
+        f(i+1, j-1) + 1 & i < j  \mathbin{\&}  A_{i} =  B_{j} \\
+        0 & \text{en otro caso}
+        \end{cases} \]
         El valor de épsilon se obtiene por la siguiente formula: $ 0 < \epsilon <\frac{1}{S-1}$ donde $S$ es el número de neuronas
         \item Finalmente, solo se tiene que introducir un vector en la entrada de la primera capa, propagar hacia adelante y utilizar la recurrencia de la segunda capa hasta que solo una salida de esta capa tenga un valor positivo, el indice de la salida indica que vector prototipo reproduce dicha salida.
     \end{enumerate}
