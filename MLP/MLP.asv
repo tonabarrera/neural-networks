@@ -33,13 +33,13 @@ function MLP()
         i = i + 1;
     end
     %     arqui_entrada = input('Ingrese el vector de la arquitectura: ', 's');
-    arqui = [1 4 2 3 1];
+    arqui = [1 5 1];
     %     funciones_entrada = input('Ingrese el vector de funciones de la arqui: ', 's');
-    vector_funciones = [2 2 2 1];
+    vector_funciones = [2 1];
     %     alpha = input('Ingrese el factor de aprendizaje (alpha): ');
     alpha = 0.05;
     %     itmax = input('Ingrese el numero maximo de iteraciones: ');
-    itmax = 1000;
+    itmax = 10;
     %     Eit = input('Ingrese el error de entrenamiento de una iteracion: ');
     Eit = 0.003;
     %     itval = input('Ingrese el intervalo de validacion: ');
@@ -111,7 +111,7 @@ function [error_aprendizaje, W, b] = iteracion_aprendizaje(W, b, datos, arqui, a
     s = cell([1 capas]);
     for i = 1:length(datos)
         p = datos(i, 1);
-        for j = 1:length(vector_func)
+        for j = 1:vector_func
             a{j} = FUNCIONES{vector_func(j)}(W{j} * p + b{j});
             p = a{j};
         end
@@ -119,14 +119,15 @@ function [error_aprendizaje, W, b] = iteracion_aprendizaje(W, b, datos, arqui, a
         error_aprendizaje = error_aprendizaje + abs(e);
         s{capas} = -2 * e;
         for k = capas-1:-1:1
-            W{k+1} = W{k+1} - alpha * s{k+1} * a{k}';
-            b{k+1} = b{k+1} - alpha * s{k+1};
             Fn = zeros(arqui(k+1));
             for j = 1:arqui(k+1)
                 Fn(j, j) = (1-a{k}(j)) * a{k}(j);
             end
+            W{k+1} = W{k+1} - alpha * s{k+1} * a{k}';
+            b{k+1} = b{k+1} - alpha * s{k+1};
             s{k} = Fn * W{k+1}' * s{k+1};
         end
+
         W{1} = W{1} - alpha * s{1} * datos(i, 1)';
         b{1} = b{1} - alpha * s{1};
     end
@@ -140,7 +141,7 @@ function error_iteracion = iteracion_validacion(W, b, datos, arqui, vector_func)
     a = cell([1 M]);
     for i = 1:length(datos)
         p = datos(i, 1);
-        for j = 1:length(vector_func)
+        for j = 1:vector_func
             a{j} = FUNCIONES{vector_func(j)}(W{j} * p + b{j});
             p = a{j};
         end
