@@ -36,17 +36,17 @@ function MLP()
         i = i + 1;
     end
     %     arqui_entrada = input('Ingrese el vector de la arquitectura: ', 's');
-    arqui = [1 2 2 1];
+    arqui = [1 4 3 1];
     %     funciones_entrada = input('Ingrese el vector de funciones de la arqui: ', 's');
     vector_func = [2 2 1];
     %     alpha = input('Ingrese el factor de aprendizaje (alpha): ');
     alpha = 0.04;
     %     itmax = input('Ingrese el numero maximo de iteraciones: ');
-    itmax = 50;
+    itmax = 5000;
     %     Eit = input('Ingrese el error de entrenamiento de una iteracion: ');
     Eit = 0.003;
     %     itval = input('Ingrese el intervalo de validacion: ');
-    itval = 10;
+    itval = 100;
     %     num_val = input('Ingrese el numero de incrementos consecutivos: ');
     num_val = 5;
     %     division = input('Elija si dividir 1) 80-10-10 o 2) 70-15-15: ');
@@ -82,18 +82,101 @@ function MLP()
     fclose(f_errores);
     graficar_errores(itmax, itval);
     [datos_prueba, Ep]= iteracion_prueba(W, b, datos_prueba);
+    guardar_valores_finales(W, b);
+    graficar_salida(datos_prueba);
+    graficar_pesos();
+    graficar_bias();
+    imprimir_errores(error_aprendizaje, Ep, Eval);
+end
+
+function guardar_valores_finales(W, b)
+    capas = length(W);
+    for i = 1:capas
+        archivo_W = strcat('W_final_', num2str(i));
+        archivo_W = strcat(archivo_W, '.txt');
+        archivo_b = strcat('b_final_', num2str(i));
+        archivo_b = strcat(archivo_b, '.txt');
+        f_pesos = fopen(archivo_W, 'w');
+        f_bias = fopen(archivo_b, 'w');
+        fprintf(f_pesos, '%.10f ', W{i});
+        fprintf(f_pesos, '\n');
+        fprintf(f_bias, '%.10f ', b{i});
+        fprintf(f_bias, '\n');
+        fclose(f_pesos);
+        fclose(f_bias);
+    end
+end
+
+function graficar_salida(datos_prueba)
     figure('Name', 'Salida del MLP vs el conjunto de prueba');
-    plot(datos_prueba(:, 1)', datos_prueba(:, 2)');
+    plot(datos_prueba(:, 1)', datos_prueba(:, 2)', 'o', 'Color', 'g');
     hold;
     grid;
-    plot(datos_prueba(:, 1)', datos_prueba(:, 3)');
+    plot(datos_prueba(:, 1)', datos_prueba(:, 3)', 'x', 'Color', 'r');
+    title('Salida del MLP vs el conjunto de prueba');
+    xlabel('p');
+    ylabel('g(p)');
     legend('Prueba', 'MLP');
-    fprintf('---------------------------------------------------------\n');
+end
+
+function graficar_pesos()
+    global arqui;
+    capas = length(arqui) - 1;
+    for i = 1:capas
+        titulo = strcat('Evolución de los pesos de la capa #', num2str(i));
+        figure('Name', titulo);
+        grid;
+        hold;
+        archivo_W = strcat('W_', num2str(i));
+        archivo_W = strcat(archivo_W, '.txt');
+        W_bias = load(archivo_W);
+        filas = length(W_bias);
+        etiquetas = cell(1, arqui(i)*arqui(i+1));
+        k = 1;
+        for j = 1:arqui(i)
+            for l = 1:arqui(i+1)
+                etiquetas{k} = ['W_{' num2str(j) ',' num2str(l) '}'];
+                k = k + 1;
+            end
+        end;
+        plot(0:filas-1, W_bias);
+        title(titulo);
+        xlabel('Iteración');
+        ylabel('W');
+        legend(etiquetas);
+    end
+end
+
+function graficar_bias()
+    global arqui;
+    capas = length(arqui) - 1;
+    for i = 1:capas
+        titulo = strcat('Evolución del bias de la capa #', num2str(i));
+        figure('Name', titulo);
+        grid;
+        hold;
+        archivo_b = strcat('b_', num2str(i));
+        archivo_b = strcat(archivo_b, '.txt');
+        f_bias = load(archivo_b);
+        [filas, columnas] = size(f_bias);
+        etiquetas = cell(1, columnas);
+        for j = 1:columnas
+            etiquetas{j} = ['b_' num2str(j)];
+        end;
+        plot(0:filas-1, f_bias);
+        title(titulo);
+        xlabel('Iteración');
+        ylabel('Bias');
+        legend(etiquetas);
+    end
+end
+
+function imprimir_errores(error_aprendizaje, Ep, Eval)
     fprintf('--------------Valores finales del MLP--------------------\n');
     fprintf('El error de aprendizaje fue: %d \n', error_aprendizaje);
     fprintf('El error de prueba fue: %d \n', Ep);
     fprintf('El error de validacion fue: %d \n', Eval);
-    fprintf('-----------------------------------------------------------\n');
+    fprintf('---------------------------------------------------------\n');
 end
 
 function graficar_errores(itmax, itval)
