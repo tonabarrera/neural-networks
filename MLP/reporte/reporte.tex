@@ -84,7 +84,55 @@ que tiene el uso de esta.
 
 \newpage
 \section{Marco teórico}
-Nada \cite{libro1}
+Además de presentar la teoría relacionada con el MLP es necesario explicar lo que es el algoritmo de propagación hacia atrás (o Backpropagation en inglés) que es la base del aprendizaje de esta arquitectura.
+
+El perceptrón multicapa (Multilayer Perceptron) surge de la necesidad de tratar problemas que no son linealmente separables es por esto que Frank Rosenblatt y Bernard Widrow propusieron redes multicapa pero no pudieron generalizar los algoritmos necesarios para entrenar dichas redes.
+
+Dicho algoritmo fue descrito hasta 1974 por Paul Werbos pero fue hasta 1980 cuando se empezó a divulgar y fue entonces cuando el MLP entrenado por el algoritmo de backpropagation se ha convertido en la red neuronal más utilizado. \cite{libro1}
+\subsection{Perceptron multicapa}
+Un perceptron multicapa es aquello en el cual la salida de una capa es la entrada de la siguiente capa, un ejemplo de esto es el mostrado en la figura \ref{fig:MLP} donde se presenta un MLP de tres capas. En un MLP cada capa puede tener diferente número de neuronas y distintas funciones de transferencia. Para poder diferenciar cada capa se utiliza un superindice como por ejemplo:
+\[ \begin{bmatrix} R & S^1 & S^2 & S^3 & \dots & S^N \end{bmatrix} \]
+En donde $S^1$ indica el número de neuronas de la capa uno, $S^2$ el número de neuronas en la capa dos y así consecutivamente. Esta misma estructura permite identificar la arquitectura de la red neuronal donde $R$ es el número de entradas. Para identificar el conjunto de funciones que se utiliza en cada capa se utiliza.
+
+\[ \begin{bmatrix} F^1 & F^2 & F^3 & \dots & F^N \end{bmatrix} \]
+
+Cada uno de estos elementos hace referencia alguna función de activación, las funciones que más se suelen utilizar son no lineales algunas de estas son.
+
+\begin{itemize}
+    \item Log-Sigmoid
+    \[ a = \dfrac{1}{1+e^{-n}}\]
+    \item Hyperbolic Tangent Sigmoid
+    \[ a = \dfrac{e^n - e^{-n}}{e^n + e^{-n}}\]
+    \item Linear
+    \[ a = n\]
+\end{itemize}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=16cm]{img/MLP.png}
+        \caption{Perceptron de tres capas. \cite{libro1}}
+        \label{fig:MLP}
+    \end{center}
+\end{figure}
+Las principales aplicaciones del MLP son la clasificación de patrones y la aproximación de funciones. La aproximación de señales se usa en sistemas de control en donde se trata de encontrar una función que pueda mapear mediciones de salidas a controles de entrada. Se puede realizar la aproximación de cualquier función si se tienen suficientes neuronas en las capas ocultas. 
+\subsection{Backpropagation}
+Para el estudio de backpropagation es importante conocer las ecuaciones que se usan en el aprendizaje que realiza. La primera de ellas está relacionada con las salidas de cada capa del MLP, estas ecuaciones son otra forma de representar la arquitectura de la figura \ref{fig:MLP}.
+
+\begin{equation} \label{eq:1}
+\boldsymbol{a}^0 = \boldsymbol{p}
+\end{equation}
+\begin{equation} \label{eq:2}
+\boldsymbol{a}^{m+1} = \boldsymbol{f}^{m+1}(\boldsymbol{W}^{m+1}\boldsymbol{a}^{m}+\boldsymbol{b}^{m+1}
+), \text{Para $m=0, 1, \ldots M-1$}
+\end{equation}
+\begin{equation} \label{eq:3}
+    \boldsymbol{a} = \boldsymbol{a}^{M}
+\end{equation}
+El valor de $M$ es el número de capas que tiene la red. La ecuación \ref{eq:1} hace referencia a que la capa uno tiene como entrada el conjunto de datos $\boldsymbol{p}$. Por otro lado la ecuación \ref{eq:3} es considerado como la salida final de la red neuronal.
+
+El algoritmo backpropagation es una generalización del algoritmo LMS ya que ambos utilizan el error cuadrático medio, además utiliza un conjunto de entrenamiento compuesto por la entrada a la red y su correspondiente salida objetivo.
+\[ \left\lbrace \boldsymbol{p_1}, \boldsymbol{t_1} \right\rbrace, \left\lbrace \boldsymbol{p_2}, \boldsymbol{t_2} \right\rbrace, \dots, \left\lbrace \boldsymbol{p_Q}, \boldsymbol{t_Q} \right\rbrace  \]
+
 \subsection{ECUACIONES QUE PODRÍA ESTAR OCUPANDO}
 \subsubsection{Forward propagation}
 \begin{align*}

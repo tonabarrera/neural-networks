@@ -42,7 +42,7 @@ function MLP()
     %     alpha = input('Ingrese el factor de aprendizaje (alpha): ');
     alpha = 0.04;
     %     itmax = input('Ingrese el numero maximo de iteraciones: ');
-    itmax = 5000;
+    itmax = 1000;
     %     Eit = input('Ingrese el error de entrenamiento de una iteracion: ');
     Eit = 0.003;
     %     itval = input('Ingrese el intervalo de validacion: ');
