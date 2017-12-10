@@ -1,118 +1,162 @@
-%% Funcion principal
 function MLP()
+    % Funcion principal del perceptron multicapa
+    
+    % Variables globales que se utilizan mucho y no cambian
     global FUNCIONES;
     global arqui;
     global vector_func;
+    % Funciones que se pueden utilizar
     FUNCIONES = {@purelin, @logsig, @tansig};
-    %     archivo_datos = input('Ingrese el nombre del archivo de datos: ', 's');
-    %     archivo_targets = input('Ingrese el nombre del archivo de targets: ', 's');
-    %     rango_entrada = input('Ingrese el nombre del archivo de targets: ', 's');
-    % rango = [-2 2];
-    puntos = zeros(200, 2);
-    puntos(:, 1) = -2 + (2-(-2)) * rand(200, 1);
-    puntos(:, 1) = sort(puntos(:, 1));
-    puntos(:, 2) = sin(pi*puntos(:, 1));
-    datos_aprendizaje = zeros(160, 2);
-    datos_validacion = zeros(20, 2);
-    datos_prueba = zeros(20, 3);
+    archivo_datos = input('Ingrese el nombre del archivo de datos: ', 's');
+    archivo_targets = input('Ingrese el nombre del archivo de targets: ', 's');
+    rango_entrada = input('Ingrese rango de la función: ', 's');
+    entradas = load(archivo_datos);
+    targets = load(archivo_targets);
+    % Total de datos 
+    num_datos = length(entradas);
+    % Como se dividiran los datos
+    division = input('Elija si dividir 1) 80-10-10 o 2) 70-15-15: ');
+    divisor = .8;
+    if division == 2
+        divisor = .7;
+    end
+    % Total de datos de entrenamiento, prueba y validacion
+    tam_entrenamiento = round(num_datos * divisor);
+    tam_prueba = (num_datos - tam_entrenamiento) / 2;
+    tam_validacion = tam_prueba;
+    % Inicializacion de matrices
+    datos_aprendizaje = zeros(tam_entrenamiento, 2);
+    datos_validacion = zeros(tam_validacion, 2);
+    datos_prueba = zeros(tam_prueba, 3);
     j = 1;
     k = 1;
     l = 1;
     i = 1;
-    while (i <= 200)
-        if mod(i, 10) == 0
-            datos_prueba(j, 1) = puntos(i, 1);
-            datos_prueba(j, 2) = puntos(i, 2);
+    % Distribucion de los datos
+    auxiliar = round(num_datos / (num_datos - tam_entrenamiento));
+    tomar = 0;
+    contador = 0;
+    algo = 1;
+    aux_aprendizaje = 0;
+    while (i <= num_datos)
+        if tomar == 1
+            datos_prueba(j, 1) = entradas(i);
+            datos_prueba(j, 2) = targets(i);
             j = j + 1;
-        elseif mod(i, 5) == 0
-            datos_validacion(k, 1) = puntos(i, 1);
-            datos_validacion(k, 2) = puntos(i, 2);
+            tomar = 0;
+        elseif tomar == 2
+            datos_validacion(k, 1) = entradas(i);
+            datos_validacion(k, 2) = targets(i);
             k = k + 1;
+            tomar = 0;
         else
-            datos_aprendizaje(l, 1) = puntos(i, 1);
-            datos_aprendizaje(l, 2) = puntos(i, 2);
-            l = l + 1;
+            if aux_aprendizaje < tam_entrenamiento
+                datos_aprendizaje(l, 1) = entradas(i);
+                datos_aprendizaje(l, 2) = targets(i);
+                l = l + 1;
+                contador = contador + 1;
+                aux_aprendizaje = aux_aprendizaje+1;
+            else
+                contador = auxiliar;
+                i = i-1;
+            end
+            if contador == auxiliar
+                contador = 0;
+                if algo == 1
+                    tomar = 1;
+                    algo = 2;
+                else
+                    tomar = 2;
+                    algo = 1;
+                end
+            end
         end
         i = i + 1;
     end
-    %     arqui_entrada = input('Ingrese el vector de la arquitectura: ', 's');
-    arqui = [1 4 3 1];
-    %     funciones_entrada = input('Ingrese el vector de funciones de la arqui: ', 's');
-    vector_func = [2 2 1];
-    %     alpha = input('Ingrese el factor de aprendizaje (alpha): ');
-    alpha = 0.04;
-    %     itmax = input('Ingrese el numero maximo de iteraciones: ');
-    itmax = 1000;
-    %     Eit = input('Ingrese el error de entrenamiento de una iteracion: ');
-    Eit = 0.003;
-    %     itval = input('Ingrese el intervalo de validacion: ');
-    itval = 100;
-    %     num_val = input('Ingrese el numero de incrementos consecutivos: ');
-    num_val = 5;
-    %     division = input('Elija si dividir 1) 80-10-10 o 2) 70-15-15: ');
+    arqui_entrada = input('Ingrese el vector de la arquitectura: ', 's');
+    arqui_entrada = textscan(arqui_entrada, '%d', 'Delimiter', ' ' );
+    arqui = permute(arqui_entrada{1}, [2, 1]);
+    fprintf('Ingrese el vector de funciones\n');
+    fprintf('1.-purelin\n2.-logsig\n3.-tansig\n')
+    funciones_entrada = input('Solo los numeros: ', 's');
+    funciones_entrada = textscan(funciones_entrada, '%d', 'Delimiter', ' ' );
+    vector_func = permute(funciones_entrada{1}, [2, 1]);
+    alpha = input('Ingrese el factor de aprendizaje (alpha): ');
+    itmax = input('Ingrese el numero maximo de iteraciones: ');
+    Eit = input('Ingrese el error de entrenamiento de una iteracion: ');
+    itval = input('Ingrese el intervalo de validacion: ');
+    num_val = input('Ingrese el numero de incrementos consecutivos: ');
+    
+    % Inicializacion de variables
     [W, b] = inicializar();
-    incrementos = 0;
-    Eval = 0;
+    incrementos = 0; % Contador incrementos
+    Eval = 0; % Error de validacion
     error_aprendizaje = 0;
+    % Archivo para almacenar el error de aprendizaje y validacion
     f_errores = fopen('errores.txt', 'w');
+    % Variable para saber el criterio de finalizacion
+    condicion_finalizacion = 0;
+    % Comenzamos las iteraciones
     for iteracion = 1:itmax
-        % Condiciones de finalizacion
+        % Iteracion de valicacion
         if mod(iteracion, itval) == 0
-            fprintf('Iteracion de validacion %d incremento: %d\n', iteracion, incrementos);
-            fprintf('El error %d\n', error_aprendizaje);
+            fprintf('Iteracion de validacion #%d: %d incre %d\n', iteracion, error_aprendizaje, incrementos);
             error_validacion = iteracion_validacion(W, b, datos_validacion);
             fprintf(f_errores, '%.10f 0\n', error_validacion);
+            % Comparacion de errores de validacion
             if error_validacion > Eval
                 incrementos = incrementos + 1;
             else
                 incrementos = 0;
             end
             Eval = error_validacion;
+            % Si alcanzamos el maximo de intecrementos terminamos
             if incrementos == num_val
+                condicion_finalizacion = 1;
                 break;
             end
         else
+            % Iteracion aprendizaje
             [error_aprendizaje, W, b] = iteracion_aprendizaje(W, b, datos_aprendizaje, alpha);
             fprintf(f_errores, '%.10f 1\n', error_aprendizaje);
+            % Si cumple la condicion terminamos
             if error_aprendizaje < Eit
+                condicion_finalizacion = 2;
                 break
             end
         end 
     end
     fclose(f_errores);
-    graficar_errores(itmax, itval);
+    % Realizar la iteracion de prueba
     [datos_prueba, Ep]= iteracion_prueba(W, b, datos_prueba);
+    % Graficacion e impresion de resultados
+    graficar_original(entradas, targets);
+    graficar_errores(itmax, itval);
     guardar_valores_finales(W, b);
     graficar_salida(datos_prueba);
     graficar_pesos();
     graficar_bias();
-    imprimir_errores(error_aprendizaje, Ep, Eval);
+    mostrar_resultados(error_aprendizaje, Ep, Eval, condicion_finalizacion);
 end
 
-function guardar_valores_finales(W, b)
-    capas = length(W);
-    for i = 1:capas
-        archivo_W = strcat('W_final_', num2str(i));
-        archivo_W = strcat(archivo_W, '.txt');
-        archivo_b = strcat('b_final_', num2str(i));
-        archivo_b = strcat(archivo_b, '.txt');
-        f_pesos = fopen(archivo_W, 'w');
-        f_bias = fopen(archivo_b, 'w');
-        fprintf(f_pesos, '%.10f ', W{i});
-        fprintf(f_pesos, '\n');
-        fprintf(f_bias, '%.10f ', b{i});
-        fprintf(f_bias, '\n');
-        fclose(f_pesos);
-        fclose(f_bias);
-    end
+function graficar_original(entradas, targets)
+    % Graficamos la funcion original
+    figure('Name', 'Función original');
+    plot(entradas, targets);
+    hold;
+    grid;
+    title('Función original');
+    xlabel('p');
+    ylabel('g(p)');
 end
 
 function graficar_salida(datos_prueba)
+    % Grafica de comparacion de resultados
     figure('Name', 'Salida del MLP vs el conjunto de prueba');
-    plot(datos_prueba(:, 1)', datos_prueba(:, 2)', 'o', 'Color', 'g');
+    plot(datos_prueba(:, 1)', datos_prueba(:, 2)', '-o', 'Color', 'g');
     hold;
+    plot(datos_prueba(:, 1)', datos_prueba(:, 3)', '-x', 'Color', [0.54 0.27 0.07]);
     grid;
-    plot(datos_prueba(:, 1)', datos_prueba(:, 3)', 'x', 'Color', 'r');
     title('Salida del MLP vs el conjunto de prueba');
     xlabel('p');
     ylabel('g(p)');
@@ -120,8 +164,10 @@ function graficar_salida(datos_prueba)
 end
 
 function graficar_pesos()
+    % Grafica de evolucion de pesos de cada capa
     global arqui;
     capas = length(arqui) - 1;
+    % Graficacion por capa
     for i = 1:capas
         titulo = strcat('Evolución de los pesos de la capa #', num2str(i));
         figure('Name', titulo);
@@ -135,7 +181,7 @@ function graficar_pesos()
         k = 1;
         for j = 1:arqui(i)
             for l = 1:arqui(i+1)
-                etiquetas{k} = ['W_{' num2str(j) ',' num2str(l) '}'];
+                etiquetas{k} = ['W^{' num2str(i) '}_{' num2str(l) ',' num2str(j) '}'];
                 k = k + 1;
             end
         end;
@@ -148,8 +194,10 @@ function graficar_pesos()
 end
 
 function graficar_bias()
+    % Graficar evolucion del bias de cada capa
     global arqui;
     capas = length(arqui) - 1;
+    % Bias de cada capa
     for i = 1:capas
         titulo = strcat('Evolución del bias de la capa #', num2str(i));
         figure('Name', titulo);
@@ -161,7 +209,7 @@ function graficar_bias()
         [filas, columnas] = size(f_bias);
         etiquetas = cell(1, columnas);
         for j = 1:columnas
-            etiquetas{j} = ['b_' num2str(j)];
+            etiquetas{j} = ['b^{' num2str(i) '}_' num2str(j)];
         end;
         plot(0:filas-1, f_bias);
         title(titulo);
@@ -171,15 +219,8 @@ function graficar_bias()
     end
 end
 
-function imprimir_errores(error_aprendizaje, Ep, Eval)
-    fprintf('--------------Valores finales del MLP--------------------\n');
-    fprintf('El error de aprendizaje fue: %d \n', error_aprendizaje);
-    fprintf('El error de prueba fue: %d \n', Ep);
-    fprintf('El error de validacion fue: %d \n', Eval);
-    fprintf('---------------------------------------------------------\n');
-end
-
 function graficar_errores(itmax, itval)
+    % Grafica de la evolucion del error de iteracion y validacion
     vector_errores = load('errores.txt');
     vector_validacion = zeros(2, itmax/itval);
     vector_aprendizaje = zeros(2, itmax-itmax/itval);
@@ -197,13 +238,52 @@ function graficar_errores(itmax, itval)
         end
     end
     figure('Name', 'Evolución de los errores de validacion y aprendizaje');
+    
     plot(vector_validacion(1,:), vector_validacion(2,:), 'o');
     hold;
-    plot(vector_aprendizaje(1,:), vector_aprendizaje(2,:), '*');
+    plot(vector_aprendizaje(1,:), vector_aprendizaje(2,:), '.');
     grid;
     xlabel('Iteración');
     ylabel('Error');
+    title('Evolución de los errores de validacion y aprendizaje');
     legend('Error de validacion', 'Error de aprendizaje');
+end
+
+function mostrar_resultados(error_aprendizaje, Ep, Eval, condicion_fin)
+    % Imprimir valores importantes de la red
+    fprintf('--------------Valores finales del MLP--------------------\n');
+    fprintf('El error de aprendizaje fue: %d \n', error_aprendizaje);
+    fprintf('El error de prueba fue: %d \n', Ep);
+    fprintf('El error de validacion fue: %d \n', Eval);
+    fprintf('La condición de finalizacion es: ');
+    if condicion_fin == 0
+        fprintf('Maximo de iteraciones alcanzado\n');
+    elseif condicion_fin == 1
+        fprintf('Early stopping\n');
+    else
+        fprintf('Error de iteracion menor a Eit\n');
+    end
+    fprintf('---------------------------------------------------------\n');
+end
+
+function guardar_valores_finales(W, b)
+    % Guardar la actualizacion de pesos y bias
+    capas = length(W);
+    % Hay un para bias y pesos por cada capa
+    for i = 1:capas
+        archivo_W = strcat('W_final_', num2str(i));
+        archivo_W = strcat(archivo_W, '.txt');
+        archivo_b = strcat('b_final_', num2str(i));
+        archivo_b = strcat(archivo_b, '.txt');
+        f_pesos = fopen(archivo_W, 'w');
+        f_bias = fopen(archivo_b, 'w');
+        fprintf(f_pesos, '%.10f ', W{i});
+        fprintf(f_pesos, '\n');
+        fprintf(f_bias, '%.10f ', b{i});
+        fprintf(f_bias, '\n');
+        fclose(f_pesos);
+        fclose(f_bias);
+    end
 end
 
 function [W, b] = inicializar()
@@ -211,7 +291,7 @@ function [W, b] = inicializar()
     capas = length(arqui) - 1;
     b = cell([1 capas]);
     W = cell([1 capas]);
-    
+    % Inicializar y guardar los pesos y bias de cada capa
     for i = 1:capas
         archivo_W = strcat('W_', num2str(i));
         archivo_W = strcat(archivo_W, '.txt');
@@ -232,6 +312,7 @@ function [W, b] = inicializar()
     end
 end
 
+% Derivadas de las funciones que se utilizan
 function valor = derivada_purelin(~)
     valor = 1;
 end
@@ -245,18 +326,24 @@ function valor = derivada_tansig(a)
 end
 
 function [datos_prueba, error_prueba] = iteracion_prueba(W, b, datos_prueba)
+    % Propagacion del conjunto de prueba
     global vector_func;
     global FUNCIONES;
     error_prueba = 0;
+    % Ciclo de los datos
     for i = 1:length(datos_prueba)
         p = datos_prueba(i, 1);
+        % Ciclo de las capas de la red
         for j = 1:length(vector_func)
+            % Seleccion de la funcion a utilizar
             a = FUNCIONES{vector_func(j)}(W{j} * p + b{j});
             p = a;
         end
-        error_prueba = abs(datos_prueba(i, 2) - a);
+        e = datos_prueba(i, 2) - a;
+        error_prueba = error_prueba + (e' * e);
         datos_prueba(i, 3) = a;
     end
+    % Regresamos el error de prueba
     error_prueba = error_prueba / length(datos_prueba);    
 end
 
@@ -268,15 +355,19 @@ function [error_aprendizaje, W, b] = iteracion_aprendizaje(W, b, datos, alpha)
     capas = length(arqui) - 1;
     a = cell([1 capas]);
     s = cell([1 capas]);
+    % Iteracion sobre todos los datos
     for i = 1:length(datos)
         p = datos(i, 1);
+        % Propagacion hacia adelante
         for j = 1:length(vector_func)
             a{j} = FUNCIONES{vector_func(j)}(W{j} * p + b{j});
             p = a{j};
         end
         e = datos(i, 2) - a{capas};
-        error_aprendizaje = error_aprendizaje + abs(e);
+        error_aprendizaje = error_aprendizaje + (e' * e);
+        % Aprendizaje realizado
         s{capas} = -2 * e;
+        % Modificamos cada capa
         for k = capas-1:-1:1
             W{k+1} = W{k+1} - alpha * s{k+1} * a{k}';
             b{k+1} = b{k+1} - alpha * s{k+1};
@@ -296,9 +387,11 @@ function [error_aprendizaje, W, b] = iteracion_aprendizaje(W, b, datos, alpha)
             end
             s{k} = Fn * W{k+1}' * s{k+1};
         end
+        % Primera capa
         W{1} = W{1} - alpha * s{1} * datos(i, 1)';
         b{1} = b{1} - alpha * s{1};
     end
+    % Escritura de los valores
     for i = 1:capas
         archivo_W = strcat('W_', num2str(i));
         archivo_W = strcat(archivo_W, '.txt');
@@ -313,9 +406,8 @@ function [error_aprendizaje, W, b] = iteracion_aprendizaje(W, b, datos, alpha)
         fclose(f_bias);
         fclose(f_pesos);
     end
-    
+    % Se devuelve el error
     error_aprendizaje = error_aprendizaje / length(datos);
-    
 end
 
 function error_iteracion = iteracion_validacion(W, b, datos)
@@ -325,16 +417,21 @@ function error_iteracion = iteracion_validacion(W, b, datos)
     error_iteracion = 0;
     M = length(arqui) - 1;
     a = cell([1 M]);
+    % Ciclo de propagacion de cada dato
     for i = 1:length(datos)
         p = datos(i, 1);
+        % Propagacion atravez de las capas
         for j = 1:length(vector_func)
+            % Seleccion de la funcion a utilizar
+            % con base a su capa
             a{j} = FUNCIONES{vector_func(j)}(W{j} * p + b{j});
             p = a{j};
         end
+        % Suma del error
         e = datos(i, 2) - a{M};
-        error_iteracion = error_iteracion + abs(e);
+        error_iteracion = error_iteracion + (e' * e);
     end
-    
+    % Guardar los datos de esta iteracion aunque no se modificaron
     for i = 1:M
         archivo_W = strcat('W_', num2str(i));
         archivo_W = strcat(archivo_W, '.txt');
@@ -349,6 +446,6 @@ function error_iteracion = iteracion_validacion(W, b, datos)
         fclose(f_bias);
         fclose(f_pesos);
     end
-    
+    % Se devuelve el error de la validacion
     error_iteracion = error_iteracion/length(datos);
 end
