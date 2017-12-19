@@ -7,7 +7,7 @@ También, se gráfica la evolución de pesos y bias para cada capa de la red neu
 \subsection{Experimento 1}
 Se trabajo con un conjunto de datos con 101 datos los cuales al graficar dan como resultado la figura \ref{fig:original1}.
 
-Los valores que se ingresaron son los que se muestran en la figura \ref{fig:entrada1} los valores más importantes que se tienen aquí son el factor de aprendizaje $\alpha=0.03$ el máximo numero de iteraciones a realizar el cual fue $iteraciones_{max} = 5000$ junto a un error permitido de $E_{it} = 0.005$ mientras que cada $200$ iteraciones se hará una iteración de validación con un máximo de tres incrementos consecutivos.
+Los valores que se ingresaron son los que se muestran en la figura \ref{fig:entrada1} los valores más importantes que se tienen aquí son el factor de aprendizaje $\alpha=0.03$ el máximo numero de iteraciones a realizar el cual fue $iteraciones_{max} = 5000$ junto a un error permitido de $E_{it} = 0.005$ mientras que cada $100$ iteraciones se hará una iteración de validación con un máximo de cinco incrementos consecutivos.
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=10cm]{1/original.png}
@@ -16,7 +16,7 @@ Los valores que se ingresaron son los que se muestran en la figura \ref{fig:entr
     \end{center}
 \end{figure}
 Para realizar las iteraciones de entrenamiento, prueba y validación la división del conjunto de datos fue $80-10-10$ respectivamente. Por otro lado, la arquitectura fue la siguiente.
-\[ \left[ 1 \quad 6 \quad 1 \right] \]
+\[ \left[ 1 \quad 9 \quad 1 \right] \]
 \[ \left[ 3 \quad 1 \right] \]
 donde
 \begin{itemize}
@@ -26,7 +26,7 @@ donde
 Una representación gráfica de esta arquitectura es la que se muestra en la figura \ref{fig:arqui1}. Los valores de pesos y bias de cada capa son inicializados entre $-1$ y $1$.
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=14cm]{img/arqui1.png}
+        \includegraphics[width=16cm]{img/arqui1.png}
         \caption{Arquitectura del primer experimento.}
         \label{fig:arqui1}
     \end{center}
@@ -35,7 +35,7 @@ Como se puede observar la primera capa tiene seis neuronas mientras que la segun
 \begin{figure}[H]
     \begin{align*}
         \boldsymbol{a}^0 &= \boldsymbol{p} \\
-        \boldsymbol{a}^{1} &= logsig(\boldsymbol{W}^{1}\boldsymbol{a}^{0}+\boldsymbol{b}^{1}
+        \boldsymbol{a}^{1} &= tansig(\boldsymbol{W}^{1}\boldsymbol{a}^{0}+\boldsymbol{b}^{1}
         ) \\
         \boldsymbol{a}^{2} &= purelin(\boldsymbol{W}^{2}\boldsymbol{a}^{1}+\boldsymbol{b}^{2}
         ) \\
@@ -45,13 +45,13 @@ Como se puede observar la primera capa tiene seis neuronas mientras que la segun
 \end{figure}
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=14cm]{1/entrada.png}
+        \includegraphics[width=13cm]{1/entrada.png}
         \caption{Entrada de datos del experimento 1.}
         \label{fig:entrada1}
     \end{center}
 \end{figure}
-
 \begin{figure}[H]
+    \tiny
     \begin{align*}
     \boldsymbol{W}^{1}(k+1) &= \boldsymbol{W}^{1}(k) - \alpha \boldsymbol{s}^{1} (\boldsymbol{a}^{0})^T \\
     \boldsymbol{b}^{1}(k+1) &= \boldsymbol{b}^{1}(k) - \alpha \boldsymbol{s}^{1} \\
@@ -65,16 +65,21 @@ Como se puede observar la primera capa tiene seis neuronas mientras que la segun
     \text{donde:} \\
     \boldsymbol{\dot{F}}^{1}(\boldsymbol{n}^{1}) &=
     \begin{bmatrix}
-        1-(a_{1}^1)^2 & 0 & 0 & 0 & 0 & 0 \\
-        0 & 1-(a_{2}^1)^2 & 0 & 0 & 0 & 0 \\
-        0 & 0 & 1-(a_{3}^1)^2 & 0 & 0 & 0 \\
-        0 & 0 & 0 & 1-(a_{4}^1)^2 & 0 & 0 \\
-        0 & 0 & 0 & 0 & 1-(a_{5}^1)^2 & 0 \\
-        0 & 0 & 0 & 0 & 0 & 1-(a_{6}^1)^2 \\
+        1-(a_{1}^1)^2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 1-(a_{2}^1)^2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 1-(a_{3}^1)^2 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 1-(a_{4}^1)^2 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 1-(a_{5}^1)^2 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 1-(a_{6}^1)^2 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 1-(a_{7}^1)^2 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 & 1-(a_{8}^1)^2 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1-(a_{9}^1)^2 \\
     \end{bmatrix}
     \end{align*}
     \caption{Ecuaciones del aprendizaje de la arquitectura de la figura \ref{fig:arqui1}.}
 \end{figure}
+
+Los errores finales se pueden observar en la figura \ref{fig:salida1}, además de que la condición de finalización fue early stopping, el cual fue crucial para poder obtener la mejor aproximación. El error de aprendizaje fue $4.05 x 10^{-2}$, el error de prueba fue $2.63 x 10^{-2}$ y finalmente el de validación fue $2.38 x 10^{-2}$.
 
 \begin{figure}[H]
     \begin{center}
@@ -83,12 +88,11 @@ Como se puede observar la primera capa tiene seis neuronas mientras que la segun
         \label{fig:salida1}
     \end{center}
 \end{figure}
-Los errores finales se pueden observar en la figura \ref{fig:salida1}, además de que la condición de finalización fue que se alcanzo el número máximo de iteraciones.
 
 Las siguientes imágenes son la evolución de pesos y bias de cada capa. Cada gráfica tiene comportamientos diferentes pero algo en lo que se parecen es que en algún punto de la gráfica ya no se producen tantas modificaciones en los valores que presentan.
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=12cm]{1/pesos1.png}
+        \includegraphics[width=16cm]{1/pesos1.png}
         \caption{Evolución de los pesos de la capa 1 del experimento 1.}
         \label{fig:pesos1}
     \end{center}
@@ -101,10 +105,9 @@ Las siguientes imágenes son la evolución de pesos y bias de cada capa. Cada gr
         \label{fig:bias1}
     \end{center}
 \end{figure}
-
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=12cm]{1/pesos2.png}
+        \includegraphics[width=13cm]{1/pesos2.png}
         \caption{Evolución de los pesos de la capa 2.}
         \label{fig:pesos2}
     \end{center}
@@ -112,7 +115,7 @@ Las siguientes imágenes son la evolución de pesos y bias de cada capa. Cada gr
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=12cm]{1/bias2.png}
+        \includegraphics[width=11cm]{1/bias2.png}
         \caption{Evolución de los bias de la capa 2.}
         \label{fig:bias2}
     \end{center}
@@ -128,7 +131,7 @@ Debido a que la división de los datos de entrada fue $80-10-10$ sólo se tienen
 Se puede observar que el error llega un punto en el que disminuye de una manera muy lenta hasta el final de todas las iteraciones.
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=16cm]{1/error.png}
+        \includegraphics[width=15cm]{1/error.png}
         \caption{Evolución de los errores del experimento 1.}
         \label{fig:error1}
     \end{center}
@@ -157,7 +160,7 @@ donde
 Una representación gráfica de esta arquitectura es la que se muestra en la figura \ref{fig:arqui2}. Los valores de pesos y bias de cada capa son inicializados entre $-1$ y $1$.
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=14cm]{img/arqui1.png}
+        \includegraphics[width=14cm]{img/arqui2.png}
         \caption{Arquitectura del segundo experimento.}
         \label{fig:arqui2}
     \end{center}
@@ -178,7 +181,7 @@ De nueva cuenta se tienen seis neuronas en la primera capa y sólo una en la seg
 
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=14cm]{2/entrada.png}
+        \includegraphics[width=12cm]{2/entrada.png}
         \caption{Entrada de datos del experimento 2.}
         \label{fig:entrada2}
     \end{center}
@@ -252,7 +255,7 @@ Las siguientes imágenes son la evolución de pesos y bias de cada capa. Cada gr
 Finalmente tenemos la comparación de la salida del MLP y los valores reales, ya que el error es muy bajo la aproximación se realiza en casi todos los puntos con excepción de los primeros valores de la gráfica
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=16cm]{2/prueba.png}
+        \includegraphics[width=10cm]{2/prueba.png}
         \caption{Comparación de las gráficas}
         \label{fig:prueba2}
     \end{center}
@@ -260,7 +263,7 @@ Finalmente tenemos la comparación de la salida del MLP y los valores reales, ya
 El comportamiento de la gráfica anterior se puede ver reflejado en la evolución del error en el cual incluso el error de validación es más pequeño con cada iteración que se genera.
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=16cm]{2/error.png}
+        \includegraphics[width=12cm]{2/error.png}
         \caption{Evolución de los dos errores.}
         \label{fig:error2}
     \end{center}
@@ -274,7 +277,7 @@ La cantidad de datos con los que se trabajo para este tercer experimento fueron 
 Por otro lado, los parámetros que se utilizaron se encuentras en la figura \ref{fig:entrada3} es importante señalar los valores que juegan el papel más crucial en el funcionamiento del MLP los cuales son el factor de aprendizaje que fue$\alpha=0.005$, el máximo numero de iteraciones a realizar el cual fue $iteraciones_{max} = 5000$ y se tiene un error de iteración de $E_{it} = 0.0005$ además de tener este parámetro de finalización se debe realizar una iteración de validación cada $100$ iteraciones y si se detecta un incremento consecutivo tres veces se detendrá el aprendizaje para evitar el sobreentrenamiento.
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=14cm]{3/original.png}
+        \includegraphics[width=12cm]{3/original.png}
         \caption{Función a aproximar en el experimento 3.}
         \label{fig:original3}
     \end{center}
@@ -285,7 +288,7 @@ En esta ocasión la división de los datos fue $80-10-10$ para conjunto de entre
 donde
 \begin{itemize}
     \item $2$ hace referencia a la función $logsig$.
-    \item $3$ hace referencia a la función $logsig$.
+    \item $3$ hace referencia a la función $tansig$.
     \item $1$ es la función $purelin$.
 \end{itemize}
 Para que esta arquitectura sea más fácil de entender se presenta una representación gráfica de dicha arquitectura (véase figura \ref{fig:arqui3}). Al igual que en los experimentos anteriores los valores de pesos y bias son inicializados entre $-1$ y $1$.
@@ -372,8 +375,117 @@ Finalmente tenemos la comparación de la salida del MLP y los valores reales, ya
 El comportamiento de la función se puede ver reflejado en la evolución del error en el cual incluso el error de validación es más pequeño con cada iteración que se genera.
 \begin{figure}[H]
     \begin{center}
-        \includegraphics[width=14cm]{3/error.png}
+        \includegraphics[width=12cm]{3/error.png}
         \caption{Evolución de los dos errores.}
         \label{fig:error3}
+    \end{center}
+\end{figure}
+\newpage
+\subsection{Experimento 4}
+En este ultimo experimento la cantidad de datos a tratar fue 250 dichos datos generaron la función mostrada en la figura \ref{fig:original4}.
+
+Adicionalmente, los parámetros que se utilizaron se encuentran en la figura \ref{fig:entrada4} es importante señalar los valores que juegan el papel más crucial en el funcionamiento del MLP los cuales son el factor de aprendizaje que fue$\alpha=0.003$, el máximo numero de iteraciones a realizar el cual fue $iteraciones_{max} = 5000$ y se tiene un error de iteración de $E_{it} = 0.005$ además de tener este parámetro de finalización se debe realizar una iteración de validación cada $200$ iteraciones y si se detecta un incremento consecutivo tres veces se detendrá el aprendizaje para evitar el sobreentrenamiento.
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=12cm]{4/original.png}
+        \caption{Función a aproximar en el experimento 4.}
+        \label{fig:original4}
+    \end{center}
+\end{figure}
+La elección de división de datos fue $80-10-10$ para conjunto de entrenamiento, prueba y validación respectivamente. Por otro lado, la arquitectura fue la siguiente.
+\[ \left[ 1 \quad 3 \quad 3 \quad 1 \right] \]
+\[ \left[ 2 \quad 2 \quad 1 \right] \]
+donde
+\begin{itemize}
+    \item $2$ hace referencia a la función $logsig$.
+    \item $1$ es la función $purelin$.
+\end{itemize}
+La representación gráfica de la arquitectura de experimento en cuestión se encuentra en la figura \ref{fig:arqui4}. Como en todos los experimentos anteriores los valores de pesos y bias son inicializados entre $-1$ y $1$.
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=16cm]{img/arqui4.png}
+        \caption{Arquitectura del cuarto experimento.}
+        \label{fig:arqui4}
+    \end{center}
+\end{figure}
+Para terminar con la explicación de la arquitectura de esta red hay que mencionar que se utilizaron tres capas, las primeras dos con tres neuronas y la ultima solo con una, es importante mencionar que se probaron diversas arquitecturas pero ninguna genero una aproximación optima.
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=14cm]{4/entrada.png}
+        \caption{Entrada de datos del experimento 4.}
+        \label{fig:entrada4}
+    \end{center}
+\end{figure}
+En la figura \ref{fig:salida4} se puede observar que la condición de finalización fue que se alcanzo el máximo de iteraciones, por otro lado, el error de aprendizaje fue $4.87 x 10^{-1}$, el error de validación fue $4.33 x 10^{-1}$ y para el error de prueba fue $5.33 x 10^{-1}$.
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=14cm]{4/salida.png}
+        \caption{Errores de cada iteración del experimento 4.}
+        \label{fig:salida4}
+    \end{center}
+\end{figure}
+Las siguientes imágenes son la evolución de pesos y bias de cada capa. Cada gráfica tiene comportamientos diferentes pero algo en lo que se parecen es que en algún punto de la gráfica ya no se producen tantas modificaciones en los valores que presentan.
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=12cm]{4/pesos1.png}
+        \caption{Evolución de los pesos de la capa 1 del experimento 4.}
+        \label{fig:pesos8}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=12cm]{4/bias1.png}
+        \caption{Evolución de los bias de la capa 1 del experimento 4.}
+        \label{fig:bias8}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=12cm]{4/pesos2.png}
+        \caption{Evolución de los pesos de la capa 2.}
+        \label{fig:pesos9}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=12cm]{4/bias2.png}
+        \caption{Evolución de los bias de la capa 2.}
+        \label{fig:bias9}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=12cm]{4/pesos3.png}
+        \caption{Evolución de los pesos de la capa 3.}
+        \label{fig:pesos10}
+    \end{center}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=12cm]{4/bias3.png}
+        \caption{Evolución de los bias de la capa 3.}
+        \label{fig:bias10}
+    \end{center}
+\end{figure}
+
+Por ultimo, tenemos la comparación de la salida del MLP y los valores reales de la función, como se puede observar las dos gráficas no tienen puntos de coincidencia por lo que el aprendizaje no fue correcto.
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=11cm]{4/prueba.png}
+        \caption{Comparación de las gráficas}
+        \label{fig:prueba4}
+    \end{center}
+\end{figure}
+De la misma forma en la cual la aproximación no fue satisfactoria, la evolución de los errores no es correcta debido a que el error de aprendizaje no tiene cambios a lo largo de las 5000 iteraciones que se realizaron.
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=11cm]{4/error.png}
+        \caption{Evolución de los dos errores.}
+        \label{fig:error4}
     \end{center}
 \end{figure}

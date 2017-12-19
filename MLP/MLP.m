@@ -1,3 +1,6 @@
+%1 8 1
+% 3 1
+% 0.03
 function MLP()
     % Funcion principal del perceptron multicapa
     
@@ -22,7 +25,7 @@ function MLP()
     end
     % Total de datos de entrenamiento, prueba y validacion
     tam_entrenamiento = round(num_datos * divisor);
-    tam_prueba = (num_datos - tam_entrenamiento) / 2;
+    tam_prueba = (num_datos - tam_entrenamiento);
     tam_validacion = tam_prueba;
     % Inicializacion de matrices
     datos_aprendizaje = zeros(tam_entrenamiento, 2);
@@ -30,46 +33,19 @@ function MLP()
     datos_prueba = zeros(tam_prueba, 3);
     j = 1;
     k = 1;
-    l = 1;
     i = 1;
     % Distribucion de los datos
-    auxiliar = round(num_datos / (num_datos - tam_entrenamiento));
-    tomar = 0;
-    contador = 0;
-    algo = 1;
-    aux_aprendizaje = 0;
     while (i <= num_datos)
-        if tomar == 1
-            datos_prueba(j, 1) = entradas(i);
-            datos_prueba(j, 2) = targets(i);
-            j = j + 1;
-            tomar = 0;
-        elseif tomar == 2
+        if mod(i, 5) == 0
             datos_validacion(k, 1) = entradas(i);
             datos_validacion(k, 2) = targets(i);
-            k = k + 1;
-            tomar = 0;
+            datos_prueba(k, 1) = entradas(i);
+            datos_prueba(k, 2) = targets(i);
+            k = k +1;
         else
-            if aux_aprendizaje < tam_entrenamiento
-                datos_aprendizaje(l, 1) = entradas(i);
-                datos_aprendizaje(l, 2) = targets(i);
-                l = l + 1;
-                contador = contador + 1;
-                aux_aprendizaje = aux_aprendizaje+1;
-            else
-                contador = auxiliar;
-                i = i-1;
-            end
-            if contador == auxiliar
-                contador = 0;
-                if algo == 1
-                    tomar = 1;
-                    algo = 2;
-                else
-                    tomar = 2;
-                    algo = 1;
-                end
-            end
+            datos_aprendizaje(j, 1) = entradas(i);
+            datos_aprendizaje(j, 2) = targets(i);
+            j = j + 1;
         end
         i = i + 1;
     end
@@ -77,7 +53,7 @@ function MLP()
     arqui_entrada = textscan(arqui_entrada, '%d', 'Delimiter', ' ' );
     arqui = permute(arqui_entrada{1}, [2, 1]);
     fprintf('Ingrese el vector de funciones\n');
-    fprintf('1.-purelin\n2.-logsig\n3.-tansig\n')
+    fprintf('1.-pureline\n2.-logsig\n3.-tansig\n')
     funciones_entrada = input('Solo los numeros: ', 's');
     funciones_entrada = textscan(funciones_entrada, '%d', 'Delimiter', ' ' );
     vector_func = permute(funciones_entrada{1}, [2, 1]);
@@ -100,7 +76,7 @@ function MLP()
     for iteracion = 1:itmax
         % Iteracion de valicacion
         if mod(iteracion, itval) == 0
-            fprintf('Iteracion de validacion #%d: %d incre %d\n', iteracion, error_aprendizaje, incrementos);
+            fprintf('#%d aprendizaje: %d validacion: %d\n', iteracion, error_aprendizaje, Eval);
             error_validacion = iteracion_validacion(W, b, datos_validacion);
             fprintf(f_errores, '%.10f 0\n', error_validacion);
             % Comparacion de errores de validacion
@@ -368,24 +344,24 @@ function [error_aprendizaje, W, b] = iteracion_aprendizaje(W, b, datos, alpha)
         % Aprendizaje realizado
         s{capas} = -2 * e;
         % Modificamos cada capa
-        for k = capas-1:-1:1
-            W{k+1} = W{k+1} - alpha * s{k+1} * a{k}';
-            b{k+1} = b{k+1} - alpha * s{k+1};
-            Fn = zeros(arqui(k+1));
-            if vector_func(k) == 1
+        for m = capas-1:-1:1
+            W{m+1} = W{m+1} - alpha * s{m+1} * a{m}';
+            b{m+1} = b{m+1} - alpha * s{m+1};
+            Fn = zeros(arqui(m+1));
+            if vector_func(m) == 1
                 % PURELING
                 derivada = @derivada_purelin;
-            elseif vector_func(k) == 2
+            elseif vector_func(m) == 2
                 % LOGSIG
                 derivada = @derivada_logsig;
             else
                 % TANSIG
                 derivada = @derivada_tansig;
             end
-            for j = 1:arqui(k+1)
-                 Fn(j, j) = derivada(a{k}(j));
+            for j = 1:arqui(m+1)
+                 Fn(j, j) = derivada(a{m}(j));
             end
-            s{k} = Fn * W{k+1}' * s{k+1};
+            s{m} = Fn * W{m+1}' * s{m+1};
         end
         % Primera capa
         W{1} = W{1} - alpha * s{1} * datos(i, 1)';
